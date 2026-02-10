@@ -13,7 +13,7 @@ pub async fn require_auth(
     let path = request.uri().path();
 
     // Skip auth for public endpoints
-    if path.starts_with("/api/auth/") || path == "/api/health" {
+    if path.starts_with("/auth/") || path == "/health" {
         return Ok(next.run(request).await);
     }
 
