@@ -21,5 +21,5 @@ WORKDIR /app
 COPY --from=backend /app/target/release/semleaf-backend ./
 COPY --from=frontend /app/frontend/dist ./dist
 ENV STATIC_DIR=/app/dist
-EXPOSE 8080
+EXPOSE 16789
 CMD ["./semleaf-backend"]

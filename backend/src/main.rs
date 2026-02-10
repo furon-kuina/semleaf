@@ -57,6 +57,11 @@ async fn main() {
     let openai_key = env::var("OPENAI_API_KEY").expect("OPENAI_API_KEY must be set");
     let embedding = EmbeddingService::new(openai_key);
 
+    let port: u16 = env::var("PORT")
+        .ok()
+        .and_then(|p| p.parse().ok())
+        .unwrap_or(16789);
+
     // OAuth client
     let google_client_id =
         ClientId::new(env::var("GOOGLE_CLIENT_ID").expect("GOOGLE_CLIENT_ID must be set"));
@@ -69,7 +74,7 @@ async fn main() {
         TokenUrl::new("https://oauth2.googleapis.com/token".to_string()).unwrap();
 
     let redirect_url = env::var("OAUTH_REDIRECT_URL")
-        .unwrap_or_else(|_| "http://localhost:8080/api/auth/callback".to_string());
+        .unwrap_or_else(|_| format!("http://localhost:{port}/api/auth/callback"));
 
     let oauth_client = BasicClient::new(google_client_id)
         .set_client_secret(google_client_secret)
@@ -108,7 +113,7 @@ async fn main() {
         .fallback_service(ServeDir::new(&static_dir).fallback(ServeFile::new(index_file)))
         .layer(session_layer);
 
-    let addr = SocketAddr::from(([0, 0, 0, 0], 8080));
+    let addr = SocketAddr::from(([0, 0, 0, 0], port));
     tracing::info!("listening on {}", addr);
     let listener = tokio::net::TcpListener::bind(addr).await.unwrap();
     axum::serve(listener, app).await.unwrap();
