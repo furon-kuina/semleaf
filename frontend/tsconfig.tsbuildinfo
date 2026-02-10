@@ -1,0 +1,1 @@
+{"root":["./src/App.tsx","./src/api.ts","./src/main.tsx","./src/types.ts","./src/components/Layout.tsx","./src/components/PhraseCard.tsx","./src/components/SearchBox.tsx","./src/components/TagInput.tsx","./src/pages/Home.tsx","./src/pages/Login.tsx","./src/pages/PhraseDetail.tsx","./src/pages/PhraseForm.tsx","./src/pages/SearchResults.tsx"],"version":"5.9.3"}
