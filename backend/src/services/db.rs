@@ -65,6 +65,7 @@ pub async fn get_phrase(pool: &PgPool, id: Uuid) -> Result<PhraseWithMeaningsRow
     Ok(row)
 }
 
+#[allow(clippy::too_many_arguments)]
 pub async fn update_phrase(
     pool: &PgPool,
     id: Uuid,
