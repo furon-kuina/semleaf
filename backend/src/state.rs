@@ -4,7 +4,8 @@ use oauth2::{EndpointNotSet, EndpointSet};
 use sqlx::PgPool;
 use std::sync::Arc;
 
-pub type OAuthClient = BasicClient<EndpointSet, EndpointNotSet, EndpointNotSet, EndpointNotSet, EndpointSet>;
+pub type OAuthClient =
+    BasicClient<EndpointSet, EndpointNotSet, EndpointNotSet, EndpointNotSet, EndpointSet>;
 
 #[derive(Clone)]
 pub struct AppState {

@@ -21,7 +21,16 @@ pub async fn export(
             let mut writer = csv::Writer::from_writer(Vec::new());
             // Header
             writer
-                .write_record(["id", "phrase", "meanings", "source", "tags", "memo", "created_at", "updated_at"])
+                .write_record([
+                    "id",
+                    "phrase",
+                    "meanings",
+                    "source",
+                    "tags",
+                    "memo",
+                    "created_at",
+                    "updated_at",
+                ])
                 .map_err(|e| AppError::Internal(e.to_string()))?;
 
             for p in &phrases {
@@ -56,8 +65,8 @@ pub async fn export(
                 .into_response())
         }
         _ => {
-            let json_data =
-                serde_json::to_string_pretty(&phrases).map_err(|e| AppError::Internal(e.to_string()))?;
+            let json_data = serde_json::to_string_pretty(&phrases)
+                .map_err(|e| AppError::Internal(e.to_string()))?;
             Ok((
                 [
                     (header::CONTENT_TYPE, "application/json; charset=utf-8"),

@@ -31,12 +31,9 @@ async fn export_json_content_disposition() {
     let (pool, db_name) = common::setup_test_db().await;
 
     let app = common::build_test_app_authenticated(pool.clone());
-    let response = tower::ServiceExt::oneshot(
-        app,
-        common::get_request("/api/export?format=json"),
-    )
-    .await
-    .unwrap();
+    let response = tower::ServiceExt::oneshot(app, common::get_request("/api/export?format=json"))
+        .await
+        .unwrap();
     assert_eq!(response.status(), 200);
 
     let content_type = response
@@ -69,12 +66,9 @@ async fn export_csv() {
     common::send_json_request(app, common::json_post("/api/phrases", &body)).await;
 
     let app = common::build_test_app_authenticated(pool.clone());
-    let response = tower::ServiceExt::oneshot(
-        app,
-        common::get_request("/api/export?format=csv"),
-    )
-    .await
-    .unwrap();
+    let response = tower::ServiceExt::oneshot(app, common::get_request("/api/export?format=csv"))
+        .await
+        .unwrap();
     assert_eq!(response.status(), 200);
 
     let content_type = response

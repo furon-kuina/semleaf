@@ -4,11 +4,11 @@ use std::future::Future;
 use std::pin::Pin;
 use std::sync::Arc;
 
+use axum::Router;
 use axum::body::Body;
 use axum::http::{self, Request, StatusCode};
 use axum::middleware;
 use axum::routing::{get, post};
-use axum::Router;
 use http_body_util::BodyExt;
 use oauth2::basic::BasicClient;
 use oauth2::{AuthUrl, ClientId, ClientSecret, RedirectUrl, TokenUrl};
@@ -40,13 +40,15 @@ pub async fn setup_test_db() -> (PgPool, String) {
     // Load .env from the project root
     dotenvy::from_path(std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../.env")).ok();
 
-    let base_url =
-        std::env::var("TEST_DATABASE_URL").unwrap_or_else(|_| {
-            std::env::var("DATABASE_URL")
-                .unwrap_or_else(|_| "postgres://postgres:postgres@localhost:5432/postgres".to_string())
-        });
+    let base_url = std::env::var("TEST_DATABASE_URL").unwrap_or_else(|_| {
+        std::env::var("DATABASE_URL")
+            .unwrap_or_else(|_| "postgres://postgres:postgres@localhost:5432/postgres".to_string())
+    });
 
-    let db_name = format!("semleaf_test_{}", uuid::Uuid::new_v4().to_string().replace('-', ""));
+    let db_name = format!(
+        "semleaf_test_{}",
+        uuid::Uuid::new_v4().to_string().replace('-', "")
+    );
 
     // Connect to base database to create test database
     let admin_pool = PgPool::connect(&base_url)
@@ -85,11 +87,8 @@ pub async fn setup_test_db() -> (PgPool, String) {
 
 /// Drops the test database.
 pub async fn teardown_test_db(db_name: &str) {
-    let base_url =
-        std::env::var("TEST_DATABASE_URL").unwrap_or_else(|_| {
-            std::env::var("DATABASE_URL")
-                .expect("DATABASE_URL must be set")
-        });
+    let base_url = std::env::var("TEST_DATABASE_URL")
+        .unwrap_or_else(|_| std::env::var("DATABASE_URL").expect("DATABASE_URL must be set"));
 
     let admin_pool = PgPool::connect(&base_url)
         .await
