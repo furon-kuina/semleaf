@@ -1,12 +1,6 @@
-mod auth;
-mod error;
-mod models;
-mod routes;
-mod services;
-mod state;
-
 use std::env;
 use std::net::SocketAddr;
+use std::sync::Arc;
 
 use axum::middleware;
 use axum::routing::{get, post};
@@ -19,8 +13,10 @@ use tower_sessions::cookie::SameSite;
 use tower_sessions::{Expiry, SessionManagerLayer};
 use tower_sessions_sqlx_store::PostgresStore;
 
-use crate::services::embedding::EmbeddingService;
-use crate::state::AppState;
+use semleaf_backend::auth;
+use semleaf_backend::routes;
+use semleaf_backend::services::embedding::{EmbeddingService, Embedder};
+use semleaf_backend::state::AppState;
 
 #[tokio::main]
 async fn main() {
@@ -55,7 +51,7 @@ async fn main() {
 
     // Embedding service
     let openai_key = env::var("OPENAI_API_KEY").expect("OPENAI_API_KEY must be set");
-    let embedding = EmbeddingService::new(openai_key);
+    let embedding: Arc<dyn Embedder> = Arc::new(EmbeddingService::new(openai_key));
 
     let port: u16 = env::var("PORT")
         .ok()
