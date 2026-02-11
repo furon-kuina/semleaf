@@ -13,15 +13,25 @@ pub async fn create_phrase(
     State(state): State<Arc<AppState>>,
     Json(req): Json<CreatePhraseRequest>,
 ) -> Result<Json<Phrase>, AppError> {
-    let embedding = state.embedding.embed(&req.meaning).await?;
+    if req.meanings.is_empty() || req.meanings.iter().any(|m| m.trim().is_empty()) {
+        return Err(AppError::BadRequest(
+            "At least one non-empty meaning is required".to_string(),
+        ));
+    }
+
+    let mut embeddings = Vec::with_capacity(req.meanings.len());
+    for meaning in &req.meanings {
+        embeddings.push(state.embedding.embed(meaning).await?);
+    }
+
     let row = db::create_phrase(
         &state.pool,
         &req.phrase,
-        &req.meaning,
+        &req.meanings,
         req.source.as_deref(),
         &req.tags,
         req.memo.as_deref(),
-        &embedding,
+        &embeddings,
     )
     .await?;
     Ok(Json(Phrase::from(row)))
@@ -40,20 +50,31 @@ pub async fn update_phrase(
     Path(id): Path<Uuid>,
     Json(req): Json<UpdatePhraseRequest>,
 ) -> Result<Json<Phrase>, AppError> {
-    let embedding = match &req.meaning {
-        Some(meaning) => Some(state.embedding.embed(meaning).await?),
-        None => None,
+    let (meanings, embeddings) = match &req.meanings {
+        Some(meanings) => {
+            if meanings.is_empty() || meanings.iter().any(|m| m.trim().is_empty()) {
+                return Err(AppError::BadRequest(
+                    "At least one non-empty meaning is required".to_string(),
+                ));
+            }
+            let mut embs = Vec::with_capacity(meanings.len());
+            for meaning in meanings {
+                embs.push(state.embedding.embed(meaning).await?);
+            }
+            (Some(meanings.as_slice()), Some(embs))
+        }
+        None => (None, None),
     };
 
     let row = db::update_phrase(
         &state.pool,
         id,
         req.phrase.as_deref(),
-        req.meaning.as_deref(),
         req.source.as_deref(),
         req.tags.as_deref(),
         req.memo.as_deref(),
-        embedding.as_ref(),
+        meanings,
+        embeddings.as_deref(),
     )
     .await?;
     Ok(Json(Phrase::from(row)))

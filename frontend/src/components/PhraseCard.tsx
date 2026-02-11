@@ -11,7 +11,9 @@ export default function PhraseCard({ phrase }: Props) {
       class="block p-4 bg-white rounded-lg border border-gray-200 hover:border-blue-300 hover:shadow-sm transition-all no-underline"
     >
       <p class="text-gray-900 font-medium">{phrase.phrase}</p>
-      <p class="text-sm text-gray-600 mt-1 line-clamp-2">{phrase.meaning}</p>
+      <p class="text-sm text-gray-600 mt-1 line-clamp-2">
+        {phrase.meanings.join(" / ")}
+      </p>
       {phrase.source && (
         <p class="text-xs text-gray-400 mt-2">{phrase.source}</p>
       )}

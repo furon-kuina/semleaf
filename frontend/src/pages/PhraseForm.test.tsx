@@ -45,7 +45,7 @@ describe("PhraseForm", () => {
       apiMock.createPhrase.mockResolvedValue({
         id: "new-id",
         phrase: "test",
-        meaning: "a test",
+        meanings: ["a test"],
       });
       const { route } = await import("preact-router");
       const user = userEvent.setup();
@@ -53,7 +53,7 @@ describe("PhraseForm", () => {
       render(<PhraseForm />);
 
       const phraseInput = getInputByLabel("Phrase *");
-      const meaningInput = getInputByLabel("Meaning *");
+      const meaningInput = screen.getByPlaceholderText("Meaning 1");
 
       await user.type(phraseInput, "test");
       await user.type(meaningInput, "a test");
@@ -63,7 +63,7 @@ describe("PhraseForm", () => {
         expect(apiMock.createPhrase).toHaveBeenCalledWith(
           expect.objectContaining({
             phrase: "test",
-            meaning: "a test",
+            meanings: ["a test"],
           }),
         );
         expect(route).toHaveBeenCalledWith("/phrases/new-id");
@@ -86,7 +86,7 @@ describe("PhraseForm", () => {
       render(<PhraseForm />);
 
       const phraseInput = getInputByLabel("Phrase *");
-      const meaningInput = getInputByLabel("Meaning *");
+      const meaningInput = screen.getByPlaceholderText("Meaning 1");
 
       await user.type(phraseInput, "test");
       await user.type(meaningInput, "a test");
@@ -103,7 +103,7 @@ describe("PhraseForm", () => {
       const phrase = makeFullPhrase({
         id: "edit-id",
         phrase: "existing",
-        meaning: "existing meaning",
+        meanings: ["existing meaning"],
         source: "source",
         memo: "memo",
       });
@@ -115,7 +115,7 @@ describe("PhraseForm", () => {
 
       await waitFor(() => {
         expect(getInputByLabel("Phrase *")).toHaveValue("existing");
-        expect(getInputByLabel("Meaning *")).toHaveValue("existing meaning");
+        expect(screen.getByDisplayValue("existing meaning")).toBeInTheDocument();
       });
     });
 

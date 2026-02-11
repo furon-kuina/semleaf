@@ -30,7 +30,7 @@ describe("PhraseDetail", () => {
   it("renders phrase details after load", async () => {
     const phrase = makeFullPhrase({
       phrase: "ephemeral",
-      meaning: "lasting a short time",
+      meanings: ["lasting a short time"],
       source: "Book",
       tags: ["vocab"],
       memo: "Remember this",
@@ -51,7 +51,7 @@ describe("PhraseDetail", () => {
   it("hides optional fields when null", async () => {
     const phrase = makePhrase({
       phrase: "minimal",
-      meaning: "bare minimum",
+      meanings: ["bare minimum"],
       source: null,
       tags: [],
       memo: null,

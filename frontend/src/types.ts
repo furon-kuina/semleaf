@@ -1,7 +1,7 @@
 export interface Phrase {
   id: string;
   phrase: string;
-  meaning: string;
+  meanings: string[];
   source: string | null;
   tags: string[];
   memo: string | null;
@@ -11,7 +11,7 @@ export interface Phrase {
 
 export interface CreatePhraseRequest {
   phrase: string;
-  meaning: string;
+  meanings: string[];
   source?: string;
   tags?: string[];
   memo?: string;
@@ -19,7 +19,7 @@ export interface CreatePhraseRequest {
 
 export interface UpdatePhraseRequest {
   phrase?: string;
-  meaning?: string;
+  meanings?: string[];
   source?: string;
   tags?: string[];
   memo?: string;

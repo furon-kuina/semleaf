@@ -11,7 +11,7 @@ interface Props {
 export default function PhraseForm({ id }: Props) {
   const isEdit = !!id;
   const [phrase, setPhrase] = useState("");
-  const [meaning, setMeaning] = useState("");
+  const [meanings, setMeanings] = useState<string[]>([""]);
   const [source, setSource] = useState("");
   const [tags, setTags] = useState<string[]>([]);
   const [memo, setMemo] = useState("");
@@ -22,16 +22,29 @@ export default function PhraseForm({ id }: Props) {
     if (!id) return;
     getPhrase(id).then((p) => {
       setPhrase(p.phrase);
-      setMeaning(p.meaning);
+      setMeanings(p.meanings.length > 0 ? p.meanings : [""]);
       setSource(p.source || "");
       setTags(p.tags);
       setMemo(p.memo || "");
     });
   }, [id]);
 
+  const addMeaning = () => setMeanings([...meanings, ""]);
+
+  const removeMeaning = (index: number) => {
+    setMeanings(meanings.filter((_, i) => i !== index));
+  };
+
+  const updateMeaning = (index: number, value: string) => {
+    const updated = [...meanings];
+    updated[index] = value;
+    setMeanings(updated);
+  };
+
   const handleSubmit = async (e: Event) => {
     e.preventDefault();
-    if (!phrase.trim() || !meaning.trim()) return;
+    const trimmedMeanings = meanings.map((m) => m.trim()).filter((m) => m);
+    if (!phrase.trim() || trimmedMeanings.length === 0) return;
 
     setLoading(true);
     setError("");
@@ -40,7 +53,7 @@ export default function PhraseForm({ id }: Props) {
       if (isEdit) {
         await updatePhrase(id, {
           phrase: phrase.trim(),
-          meaning: meaning.trim(),
+          meanings: trimmedMeanings,
           source: source.trim() || undefined,
           tags,
           memo: memo.trim() || undefined,
@@ -49,7 +62,7 @@ export default function PhraseForm({ id }: Props) {
       } else {
         const created = await createPhrase({
           phrase: phrase.trim(),
-          meaning: meaning.trim(),
+          meanings: trimmedMeanings,
           source: source.trim() || undefined,
           tags,
           memo: memo.trim() || undefined,
@@ -87,15 +100,40 @@ export default function PhraseForm({ id }: Props) {
 
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-1">
-            Meaning *
+            Meanings *
           </label>
-          <textarea
-            value={meaning}
-            onInput={(e) => setMeaning((e.target as HTMLTextAreaElement).value)}
-            rows={3}
-            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            required
-          />
+          <div class="space-y-2">
+            {meanings.map((meaning, index) => (
+              <div key={index} class="flex gap-2">
+                <input
+                  type="text"
+                  value={meaning}
+                  onInput={(e) =>
+                    updateMeaning(index, (e.target as HTMLInputElement).value)
+                  }
+                  placeholder={`Meaning ${index + 1}`}
+                  class="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  required
+                />
+                {meanings.length > 1 && (
+                  <button
+                    type="button"
+                    onClick={() => removeMeaning(index)}
+                    class="px-3 py-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors text-sm"
+                  >
+                    Remove
+                  </button>
+                )}
+              </div>
+            ))}
+          </div>
+          <button
+            type="button"
+            onClick={addMeaning}
+            class="mt-2 px-3 py-1 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors text-sm"
+          >
+            + Add meaning
+          </button>
         </div>
 
         <div>

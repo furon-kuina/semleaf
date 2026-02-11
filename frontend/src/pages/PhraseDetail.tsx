@@ -39,8 +39,20 @@ export default function PhraseDetail({ id }: Props) {
 
         <div class="space-y-4">
           <div>
-            <label class="text-sm font-medium text-gray-500">Meaning</label>
-            <p class="text-gray-900 mt-1">{phrase.meaning}</p>
+            <label class="text-sm font-medium text-gray-500">
+              {phrase.meanings.length === 1 ? "Meaning" : "Meanings"}
+            </label>
+            {phrase.meanings.length === 1 ? (
+              <p class="text-gray-900 mt-1">{phrase.meanings[0]}</p>
+            ) : (
+              <ul class="list-disc list-inside mt-1 space-y-1">
+                {phrase.meanings.map((meaning, i) => (
+                  <li key={i} class="text-gray-900">
+                    {meaning}
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
 
           {phrase.source && (

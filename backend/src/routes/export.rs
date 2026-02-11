@@ -21,7 +21,7 @@ pub async fn export(
             let mut writer = csv::Writer::from_writer(Vec::new());
             // Header
             writer
-                .write_record(["id", "phrase", "meaning", "source", "tags", "memo", "created_at", "updated_at"])
+                .write_record(["id", "phrase", "meanings", "source", "tags", "memo", "created_at", "updated_at"])
                 .map_err(|e| AppError::Internal(e.to_string()))?;
 
             for p in &phrases {
@@ -29,7 +29,7 @@ pub async fn export(
                     .write_record([
                         &p.id.to_string(),
                         &p.phrase,
-                        &p.meaning,
+                        &p.meanings.join(" | "),
                         p.source.as_deref().unwrap_or(""),
                         &p.tags.join(", "),
                         p.memo.as_deref().unwrap_or(""),

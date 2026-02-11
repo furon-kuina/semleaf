@@ -4,15 +4,15 @@ use serde_json::json;
 
 async fn seed_phrases(pool: &sqlx::PgPool) {
     let app = common::build_test_app_authenticated(pool.clone());
-    let body = json!({"phrase": "ephemeral", "meaning": "lasting for a very short time", "tags": ["vocabulary"], "source": "GRE prep"});
+    let body = json!({"phrase": "ephemeral", "meanings": ["lasting for a very short time"], "tags": ["vocabulary"], "source": "GRE prep"});
     common::send_json_request(app, common::json_post("/api/phrases", &body)).await;
 
     let app = common::build_test_app_authenticated(pool.clone());
-    let body = json!({"phrase": "ubiquitous", "meaning": "present everywhere", "tags": ["vocabulary", "common"]});
+    let body = json!({"phrase": "ubiquitous", "meanings": ["present everywhere"], "tags": ["vocabulary", "common"]});
     common::send_json_request(app, common::json_post("/api/phrases", &body)).await;
 
     let app = common::build_test_app_authenticated(pool.clone());
-    let body = json!({"phrase": "serendipity", "meaning": "finding good things by chance", "tags": ["positive"]});
+    let body = json!({"phrase": "serendipity", "meanings": ["finding good things by chance"], "tags": ["positive"]});
     common::send_json_request(app, common::json_post("/api/phrases", &body)).await;
 }
 
