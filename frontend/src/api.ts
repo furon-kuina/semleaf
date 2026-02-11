@@ -42,6 +42,9 @@ export const createPhrase = (data: CreatePhraseRequest) =>
     body: JSON.stringify(data),
   });
 
+export const listPhrases = (limit = 20) =>
+  fetchJSON<Phrase[]>(`/api/phrases?limit=${limit}`);
+
 export const getPhrase = (id: string) => fetchJSON<Phrase>(`/api/phrases/${id}`);
 
 export const updatePhrase = (id: string, data: UpdatePhraseRequest) =>

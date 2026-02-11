@@ -12,7 +12,10 @@ use crate::state::AppState;
 pub fn api_router(state: Arc<AppState>) -> Router {
     Router::new()
         .route("/health", get(health))
-        .route("/phrases", post(phrases::create_phrase))
+        .route(
+            "/phrases",
+            get(phrases::list_random_phrases).post(phrases::create_phrase),
+        )
         .route(
             "/phrases/{id}",
             get(phrases::get_phrase)

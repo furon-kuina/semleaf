@@ -178,6 +178,24 @@ pub async fn text_search(
     Ok(rows)
 }
 
+pub async fn get_random_phrases(
+    pool: &PgPool,
+    limit: i64,
+) -> Result<Vec<PhraseWithMeaningsRow>, AppError> {
+    let query = format!(
+        "{PHRASE_WITH_MEANINGS_QUERY}
+         GROUP BY p.id, p.phrase, p.source, p.tags, p.memo, p.created_at, p.updated_at
+         ORDER BY RANDOM()
+         LIMIT $1"
+    );
+
+    let rows = sqlx::query_as::<_, PhraseWithMeaningsRow>(&query)
+        .bind(limit)
+        .fetch_all(pool)
+        .await?;
+    Ok(rows)
+}
+
 pub async fn get_all_phrases(pool: &PgPool) -> Result<Vec<PhraseWithMeaningsRow>, AppError> {
     let query = format!(
         "{PHRASE_WITH_MEANINGS_QUERY}
