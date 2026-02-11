@@ -8,7 +8,7 @@ async fn export_json_default() {
 
     // Seed data
     let app = common::build_test_app_authenticated(pool.clone());
-    let body = json!({"phrase": "hello", "meaning": "a greeting", "tags": ["common"]});
+    let body = json!({"phrase": "hello", "meanings": ["a greeting"], "tags": ["common"]});
     common::send_json_request(app, common::json_post("/api/phrases", &body)).await;
 
     // Export
@@ -20,6 +20,7 @@ async fn export_json_default() {
     let phrases: Vec<serde_json::Value> = serde_json::from_str(&body_str).unwrap();
     assert_eq!(phrases.len(), 1);
     assert_eq!(phrases[0]["phrase"], "hello");
+    assert_eq!(phrases[0]["meanings"], json!(["a greeting"]));
 
     pool.close().await;
     common::teardown_test_db(&db_name).await;
@@ -64,7 +65,7 @@ async fn export_csv() {
 
     // Seed
     let app = common::build_test_app_authenticated(pool.clone());
-    let body = json!({"phrase": "test", "meaning": "a test", "source": "src", "tags": ["tag1"]});
+    let body = json!({"phrase": "test", "meanings": ["a test", "an exam"], "source": "src", "tags": ["tag1"]});
     common::send_json_request(app, common::json_post("/api/phrases", &body)).await;
 
     let app = common::build_test_app_authenticated(pool.clone());
@@ -91,10 +92,10 @@ async fn export_csv() {
     let csv_str = String::from_utf8_lossy(&body);
 
     // Check header row
-    assert!(csv_str.starts_with("id,phrase,meaning,source,tags,memo,created_at,updated_at"));
-    // Check data row contains our phrase
+    assert!(csv_str.starts_with("id,phrase,meanings,source,tags,memo,created_at,updated_at"));
+    // Check data row contains our phrase and meanings joined with " | "
     assert!(csv_str.contains("test"));
-    assert!(csv_str.contains("a test"));
+    assert!(csv_str.contains("a test | an exam"));
 
     pool.close().await;
     common::teardown_test_db(&db_name).await;

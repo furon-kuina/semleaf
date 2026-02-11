@@ -7,7 +7,7 @@ export function makePhrase(overrides?: Partial<Phrase>): Phrase {
   return {
     id: `test-id-${counter}`,
     phrase: `test phrase ${counter}`,
-    meaning: `test meaning ${counter}`,
+    meanings: [`test meaning ${counter}`],
     source: null,
     tags: [],
     memo: null,
@@ -22,7 +22,7 @@ export function makeFullPhrase(overrides?: Partial<Phrase>): Phrase {
   return {
     id: `test-id-${counter}`,
     phrase: `full phrase ${counter}`,
-    meaning: `full meaning ${counter}`,
+    meanings: [`full meaning ${counter}`],
     source: "Test Source",
     tags: ["tag1", "tag2"],
     memo: "Test memo",

@@ -48,7 +48,7 @@ describe("logout", () => {
 
 describe("createPhrase", () => {
   it("calls /api/phrases with POST and body", async () => {
-    const phrase = { phrase: "test", meaning: "a test" };
+    const phrase = { phrase: "test", meanings: ["a test"] };
     mockJsonResponse({ id: "1", ...phrase, source: null, tags: [], memo: null, created_at: "", updated_at: "" });
     await api.createPhrase(phrase);
     expect(mockFetch).toHaveBeenCalledWith("/api/phrases", expect.objectContaining({
@@ -60,7 +60,7 @@ describe("createPhrase", () => {
 
 describe("getPhrase", () => {
   it("calls /api/phrases/:id with GET", async () => {
-    mockJsonResponse({ id: "abc", phrase: "hello", meaning: "greeting" });
+    mockJsonResponse({ id: "abc", phrase: "hello", meanings: ["greeting"] });
     await api.getPhrase("abc");
     expect(mockFetch).toHaveBeenCalledWith("/api/phrases/abc", expect.objectContaining({
       headers: expect.objectContaining({ "Content-Type": "application/json" }),
@@ -71,7 +71,7 @@ describe("getPhrase", () => {
 describe("updatePhrase", () => {
   it("calls /api/phrases/:id with PUT", async () => {
     const update = { phrase: "updated" };
-    mockJsonResponse({ id: "abc", phrase: "updated", meaning: "test" });
+    mockJsonResponse({ id: "abc", phrase: "updated", meanings: ["test"] });
     await api.updatePhrase("abc", update);
     expect(mockFetch).toHaveBeenCalledWith("/api/phrases/abc", expect.objectContaining({
       method: "PUT",

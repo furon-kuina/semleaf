@@ -4,12 +4,19 @@ import PhraseCard from "./PhraseCard";
 import { makePhrase, makeFullPhrase } from "../test/helpers";
 
 describe("PhraseCard", () => {
-  it("renders phrase text and meaning", () => {
-    const phrase = makePhrase({ phrase: "ephemeral", meaning: "lasting a short time" });
+  it("renders phrase text and meanings", () => {
+    const phrase = makePhrase({ phrase: "ephemeral", meanings: ["lasting a short time"] });
     render(<PhraseCard phrase={phrase} />);
 
     expect(screen.getByText("ephemeral")).toBeInTheDocument();
     expect(screen.getByText("lasting a short time")).toBeInTheDocument();
+  });
+
+  it("renders multiple meanings joined with /", () => {
+    const phrase = makePhrase({ phrase: "test", meanings: ["meaning one", "meaning two"] });
+    render(<PhraseCard phrase={phrase} />);
+
+    expect(screen.getByText("meaning one / meaning two")).toBeInTheDocument();
   });
 
   it("links to phrase detail page", () => {
