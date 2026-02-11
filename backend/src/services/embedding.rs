@@ -1,6 +1,16 @@
+use std::future::Future;
+use std::pin::Pin;
+
 use crate::error::AppError;
 use pgvector::Vector;
 use serde::{Deserialize, Serialize};
+
+pub trait Embedder: Send + Sync {
+    fn embed<'a>(
+        &'a self,
+        text: &'a str,
+    ) -> Pin<Box<dyn Future<Output = Result<Vector, AppError>> + Send + 'a>>;
+}
 
 #[derive(Clone)]
 pub struct EmbeddingService {
@@ -32,7 +42,7 @@ impl EmbeddingService {
         }
     }
 
-    pub async fn embed(&self, text: &str) -> Result<Vector, AppError> {
+    async fn embed_impl(&self, text: &str) -> Result<Vector, AppError> {
         let request = EmbeddingRequest {
             model: "text-embedding-3-large".to_string(),
             input: text.to_string(),
@@ -70,5 +80,14 @@ impl EmbeddingService {
             .ok_or_else(|| AppError::Embedding("No embedding returned".to_string()))?;
 
         Ok(Vector::from(embedding.embedding))
+    }
+}
+
+impl Embedder for EmbeddingService {
+    fn embed<'a>(
+        &'a self,
+        text: &'a str,
+    ) -> Pin<Box<dyn Future<Output = Result<Vector, AppError>> + Send + 'a>> {
+        Box::pin(self.embed_impl(text))
     }
 }

@@ -1,6 +1,6 @@
-mod export;
-mod phrases;
-mod search;
+pub mod export;
+pub mod phrases;
+pub mod search;
 
 use std::sync::Arc;
 

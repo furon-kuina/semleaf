@@ -1,4 +1,4 @@
-use crate::services::embedding::EmbeddingService;
+use crate::services::embedding::Embedder;
 use oauth2::basic::BasicClient;
 use oauth2::{EndpointNotSet, EndpointSet};
 use sqlx::PgPool;
@@ -9,7 +9,7 @@ pub type OAuthClient = BasicClient<EndpointSet, EndpointNotSet, EndpointNotSet, 
 #[derive(Clone)]
 pub struct AppState {
     pub pool: PgPool,
-    pub embedding: EmbeddingService,
+    pub embedding: Arc<dyn Embedder>,
     pub oauth_client: OAuthClient,
     pub allowed_emails: Vec<String>,
 }
@@ -17,7 +17,7 @@ pub struct AppState {
 impl AppState {
     pub fn new(
         pool: PgPool,
-        embedding: EmbeddingService,
+        embedding: Arc<dyn Embedder>,
         oauth_client: OAuthClient,
         allowed_emails: Vec<String>,
     ) -> Arc<Self> {
