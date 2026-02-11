@@ -113,16 +113,14 @@ mod tests {
 
     #[tokio::test]
     async fn embedding_error_hides_details() {
-        let (status, body) =
-            error_to_parts(AppError::Embedding("API key invalid".into())).await;
+        let (status, body) = error_to_parts(AppError::Embedding("API key invalid".into())).await;
         assert_eq!(status, StatusCode::INTERNAL_SERVER_ERROR);
         assert_eq!(body["error"], "Embedding service error");
     }
 
     #[tokio::test]
     async fn internal_error_hides_details() {
-        let (status, body) =
-            error_to_parts(AppError::Internal("secret details".into())).await;
+        let (status, body) = error_to_parts(AppError::Internal("secret details".into())).await;
         assert_eq!(status, StatusCode::INTERNAL_SERVER_ERROR);
         assert_eq!(body["error"], "Internal server error");
     }

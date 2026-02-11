@@ -22,11 +22,8 @@ async fn text_search_by_phrase() {
     seed_phrases(&pool).await;
 
     let app = common::build_test_app_authenticated(pool.clone());
-    let (status, json) = common::send_json_request(
-        app,
-        common::get_request("/api/search/text?q=ephemeral"),
-    )
-    .await;
+    let (status, json) =
+        common::send_json_request(app, common::get_request("/api/search/text?q=ephemeral")).await;
     assert_eq!(status, 200);
     let results = json.as_array().unwrap();
     assert_eq!(results.len(), 1);
@@ -42,11 +39,8 @@ async fn text_search_by_meaning() {
     seed_phrases(&pool).await;
 
     let app = common::build_test_app_authenticated(pool.clone());
-    let (status, json) = common::send_json_request(
-        app,
-        common::get_request("/api/search/text?q=everywhere"),
-    )
-    .await;
+    let (status, json) =
+        common::send_json_request(app, common::get_request("/api/search/text?q=everywhere")).await;
     assert_eq!(status, 200);
     let results = json.as_array().unwrap();
     assert_eq!(results.len(), 1);
@@ -62,11 +56,8 @@ async fn text_search_by_tag() {
     seed_phrases(&pool).await;
 
     let app = common::build_test_app_authenticated(pool.clone());
-    let (status, json) = common::send_json_request(
-        app,
-        common::get_request("/api/search/text?q=positive"),
-    )
-    .await;
+    let (status, json) =
+        common::send_json_request(app, common::get_request("/api/search/text?q=positive")).await;
     assert_eq!(status, 200);
     let results = json.as_array().unwrap();
     assert_eq!(results.len(), 1);
@@ -82,11 +73,8 @@ async fn text_search_case_insensitive() {
     seed_phrases(&pool).await;
 
     let app = common::build_test_app_authenticated(pool.clone());
-    let (status, json) = common::send_json_request(
-        app,
-        common::get_request("/api/search/text?q=EPHEMERAL"),
-    )
-    .await;
+    let (status, json) =
+        common::send_json_request(app, common::get_request("/api/search/text?q=EPHEMERAL")).await;
     assert_eq!(status, 200);
     let results = json.as_array().unwrap();
     assert_eq!(results.len(), 1);
@@ -140,11 +128,8 @@ async fn semantic_search_returns_results() {
 
     let app = common::build_test_app_authenticated(pool.clone());
     let body = json!({"query": "short duration", "limit": 2});
-    let (status, json) = common::send_json_request(
-        app,
-        common::json_post("/api/search/semantic", &body),
-    )
-    .await;
+    let (status, json) =
+        common::send_json_request(app, common::json_post("/api/search/semantic", &body)).await;
     assert_eq!(status, 200);
     let results = json.as_array().unwrap();
     assert_eq!(results.len(), 2);

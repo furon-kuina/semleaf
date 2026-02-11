@@ -15,10 +15,14 @@ async fn create_phrase_full_fields() {
         "memo": "Nice word"
     });
 
-    let (status, json) = common::send_json_request(app, common::json_post("/api/phrases", &body)).await;
+    let (status, json) =
+        common::send_json_request(app, common::json_post("/api/phrases", &body)).await;
     assert_eq!(status, 200);
     assert_eq!(json["phrase"], "serendipity");
-    assert_eq!(json["meanings"], json!(["the occurrence of happy events by chance", "good fortune"]));
+    assert_eq!(
+        json["meanings"],
+        json!(["the occurrence of happy events by chance", "good fortune"])
+    );
     assert_eq!(json["source"], "Oxford Dictionary");
     assert_eq!(json["tags"], json!(["vocabulary", "positive"]));
     assert_eq!(json["memo"], "Nice word");
@@ -42,7 +46,8 @@ async fn create_phrase_minimal_fields() {
         "meanings": ["a greeting"]
     });
 
-    let (status, json) = common::send_json_request(app, common::json_post("/api/phrases", &body)).await;
+    let (status, json) =
+        common::send_json_request(app, common::json_post("/api/phrases", &body)).await;
     assert_eq!(status, 200);
     assert_eq!(json["phrase"], "hello");
     assert_eq!(json["source"], json!(null));
@@ -63,7 +68,8 @@ async fn create_phrase_missing_required_field() {
         // missing "meanings"
     });
 
-    let (status, _) = common::send_json_request(app, common::json_post("/api/phrases", &body)).await;
+    let (status, _) =
+        common::send_json_request(app, common::json_post("/api/phrases", &body)).await;
     assert_eq!(status, 422);
 
     pool.close().await;
@@ -80,7 +86,8 @@ async fn create_phrase_empty_meanings_rejected() {
         "meanings": []
     });
 
-    let (status, _) = common::send_json_request(app, common::json_post("/api/phrases", &body)).await;
+    let (status, _) =
+        common::send_json_request(app, common::json_post("/api/phrases", &body)).await;
     assert_eq!(status, 400);
 
     pool.close().await;
@@ -94,12 +101,14 @@ async fn get_phrase_success() {
     // Create a phrase first
     let app = common::build_test_app_authenticated(pool.clone());
     let body = json!({"phrase": "test", "meanings": ["a test"]});
-    let (_, created) = common::send_json_request(app, common::json_post("/api/phrases", &body)).await;
+    let (_, created) =
+        common::send_json_request(app, common::json_post("/api/phrases", &body)).await;
     let id = created["id"].as_str().unwrap();
 
     // Fetch it
     let app = common::build_test_app_authenticated(pool.clone());
-    let (status, json) = common::send_json_request(app, common::get_request(&format!("/api/phrases/{id}"))).await;
+    let (status, json) =
+        common::send_json_request(app, common::get_request(&format!("/api/phrases/{id}"))).await;
     assert_eq!(status, 200);
     assert_eq!(json["phrase"], "test");
     assert_eq!(json["meanings"], json!(["a test"]));
@@ -114,7 +123,9 @@ async fn get_phrase_not_found() {
     let app = common::build_test_app_authenticated(pool.clone());
 
     let fake_id = uuid::Uuid::new_v4();
-    let (status, json) = common::send_json_request(app, common::get_request(&format!("/api/phrases/{fake_id}"))).await;
+    let (status, json) =
+        common::send_json_request(app, common::get_request(&format!("/api/phrases/{fake_id}")))
+            .await;
     assert_eq!(status, 404);
     assert!(json["error"].is_string());
 
@@ -129,13 +140,18 @@ async fn update_phrase_partial() {
     // Create
     let app = common::build_test_app_authenticated(pool.clone());
     let body = json!({"phrase": "original", "meanings": ["original meaning"], "source": "book"});
-    let (_, created) = common::send_json_request(app, common::json_post("/api/phrases", &body)).await;
+    let (_, created) =
+        common::send_json_request(app, common::json_post("/api/phrases", &body)).await;
     let id = created["id"].as_str().unwrap();
 
     // Update only the phrase text
     let app = common::build_test_app_authenticated(pool.clone());
     let update = json!({"phrase": "updated"});
-    let (status, json) = common::send_json_request(app, common::json_put(&format!("/api/phrases/{id}"), &update)).await;
+    let (status, json) = common::send_json_request(
+        app,
+        common::json_put(&format!("/api/phrases/{id}"), &update),
+    )
+    .await;
     assert_eq!(status, 200);
     assert_eq!(json["phrase"], "updated");
     assert_eq!(json["meanings"], json!(["original meaning"])); // unchanged
@@ -152,15 +168,23 @@ async fn update_phrase_meanings() {
     // Create
     let app = common::build_test_app_authenticated(pool.clone());
     let body = json!({"phrase": "test", "meanings": ["meaning one"]});
-    let (_, created) = common::send_json_request(app, common::json_post("/api/phrases", &body)).await;
+    let (_, created) =
+        common::send_json_request(app, common::json_post("/api/phrases", &body)).await;
     let id = created["id"].as_str().unwrap();
 
     // Update meanings
     let app = common::build_test_app_authenticated(pool.clone());
     let update = json!({"meanings": ["new meaning one", "new meaning two"]});
-    let (status, json) = common::send_json_request(app, common::json_put(&format!("/api/phrases/{id}"), &update)).await;
+    let (status, json) = common::send_json_request(
+        app,
+        common::json_put(&format!("/api/phrases/{id}"), &update),
+    )
+    .await;
     assert_eq!(status, 200);
-    assert_eq!(json["meanings"], json!(["new meaning one", "new meaning two"]));
+    assert_eq!(
+        json["meanings"],
+        json!(["new meaning one", "new meaning two"])
+    );
 
     pool.close().await;
     common::teardown_test_db(&db_name).await;
@@ -173,7 +197,11 @@ async fn update_phrase_not_found() {
 
     let fake_id = uuid::Uuid::new_v4();
     let update = json!({"phrase": "nope"});
-    let (status, _) = common::send_json_request(app, common::json_put(&format!("/api/phrases/{fake_id}"), &update)).await;
+    let (status, _) = common::send_json_request(
+        app,
+        common::json_put(&format!("/api/phrases/{fake_id}"), &update),
+    )
+    .await;
     assert_eq!(status, 404);
 
     pool.close().await;
@@ -187,18 +215,21 @@ async fn delete_phrase_success() {
     // Create
     let app = common::build_test_app_authenticated(pool.clone());
     let body = json!({"phrase": "deleteme", "meanings": ["will be deleted"]});
-    let (_, created) = common::send_json_request(app, common::json_post("/api/phrases", &body)).await;
+    let (_, created) =
+        common::send_json_request(app, common::json_post("/api/phrases", &body)).await;
     let id = created["id"].as_str().unwrap();
 
     // Delete
     let app = common::build_test_app_authenticated(pool.clone());
-    let (status, json) = common::send_json_request(app, common::delete_request(&format!("/api/phrases/{id}"))).await;
+    let (status, json) =
+        common::send_json_request(app, common::delete_request(&format!("/api/phrases/{id}"))).await;
     assert_eq!(status, 200);
     assert_eq!(json["ok"], true);
 
     // Verify it's gone
     let app = common::build_test_app_authenticated(pool.clone());
-    let (status, _) = common::send_json_request(app, common::get_request(&format!("/api/phrases/{id}"))).await;
+    let (status, _) =
+        common::send_json_request(app, common::get_request(&format!("/api/phrases/{id}"))).await;
     assert_eq!(status, 404);
 
     pool.close().await;
@@ -211,7 +242,11 @@ async fn delete_phrase_not_found() {
     let app = common::build_test_app_authenticated(pool.clone());
 
     let fake_id = uuid::Uuid::new_v4();
-    let (status, _) = common::send_json_request(app, common::delete_request(&format!("/api/phrases/{fake_id}"))).await;
+    let (status, _) = common::send_json_request(
+        app,
+        common::delete_request(&format!("/api/phrases/{fake_id}")),
+    )
+    .await;
     assert_eq!(status, 404);
 
     pool.close().await;

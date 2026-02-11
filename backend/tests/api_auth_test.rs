@@ -5,7 +5,11 @@ async fn unauthenticated_request_to_phrases_returns_401() {
     let (pool, db_name) = common::setup_test_db().await;
     let app = common::build_test_app(pool.clone());
 
-    let (status, json) = common::send_json_request(app, common::get_request("/api/phrases/00000000-0000-0000-0000-000000000000")).await;
+    let (status, json) = common::send_json_request(
+        app,
+        common::get_request("/api/phrases/00000000-0000-0000-0000-000000000000"),
+    )
+    .await;
     assert_eq!(status, 401);
     assert_eq!(json["error"], "Unauthorized");
 
@@ -18,7 +22,8 @@ async fn unauthenticated_request_to_search_returns_401() {
     let (pool, db_name) = common::setup_test_db().await;
     let app = common::build_test_app(pool.clone());
 
-    let (status, _) = common::send_json_request(app, common::get_request("/api/search/text?q=test")).await;
+    let (status, _) =
+        common::send_json_request(app, common::get_request("/api/search/text?q=test")).await;
     assert_eq!(status, 401);
 
     pool.close().await;

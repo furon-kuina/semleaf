@@ -2,9 +2,9 @@ use std::env;
 use std::net::SocketAddr;
 use std::sync::Arc;
 
+use axum::Router;
 use axum::middleware;
 use axum::routing::{get, post};
-use axum::Router;
 use oauth2::basic::BasicClient;
 use oauth2::{AuthUrl, ClientId, ClientSecret, RedirectUrl, TokenUrl};
 use sqlx::postgres::PgPoolOptions;
@@ -15,7 +15,7 @@ use tower_sessions_sqlx_store::PostgresStore;
 
 use semleaf_backend::auth;
 use semleaf_backend::routes;
-use semleaf_backend::services::embedding::{EmbeddingService, Embedder};
+use semleaf_backend::services::embedding::{Embedder, EmbeddingService};
 use semleaf_backend::state::AppState;
 
 #[tokio::main]
@@ -47,7 +47,9 @@ async fn main() {
     let session_layer = SessionManagerLayer::new(session_store)
         .with_secure(false)
         .with_same_site(SameSite::Lax)
-        .with_expiry(Expiry::OnInactivity(tower_sessions::cookie::time::Duration::days(30)));
+        .with_expiry(Expiry::OnInactivity(
+            tower_sessions::cookie::time::Duration::days(30),
+        ));
 
     // Embedding service
     let openai_key = env::var("OPENAI_API_KEY").expect("OPENAI_API_KEY must be set");
@@ -66,8 +68,7 @@ async fn main() {
     );
     let auth_url =
         AuthUrl::new("https://accounts.google.com/o/oauth2/v2/auth".to_string()).unwrap();
-    let token_url =
-        TokenUrl::new("https://oauth2.googleapis.com/token".to_string()).unwrap();
+    let token_url = TokenUrl::new("https://oauth2.googleapis.com/token".to_string()).unwrap();
 
     let redirect_url = env::var("OAUTH_REDIRECT_URL")
         .unwrap_or_else(|_| format!("http://localhost:{port}/api/auth/callback"));

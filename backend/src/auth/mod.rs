@@ -2,10 +2,10 @@ pub mod middleware;
 
 use std::sync::Arc;
 
+use axum::Json;
 use axum::extract::Query;
 use axum::extract::State;
 use axum::response::{IntoResponse, Redirect, Response};
-use axum::Json;
 use oauth2::{AuthorizationCode, CsrfToken, Scope, TokenResponse};
 use serde::Deserialize;
 use tower_sessions::Session;

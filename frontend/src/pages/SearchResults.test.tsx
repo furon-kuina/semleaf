@@ -17,7 +17,7 @@ vi.mock("preact-router", () => ({
 let apiMock: { semanticSearch: ReturnType<typeof vi.fn>; textSearch: ReturnType<typeof vi.fn> };
 
 beforeEach(async () => {
-  apiMock = await import("../api") as typeof apiMock;
+  apiMock = (await import("../api")) as unknown as typeof apiMock;
   vi.clearAllMocks();
 });
 

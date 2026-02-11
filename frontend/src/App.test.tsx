@@ -8,14 +8,14 @@ vi.mock("./api", () => ({
 }));
 
 vi.mock("preact-router", () => {
-  const Router = ({ children }: { children: unknown }) => <div>{children}</div>;
+  const Router = ({ children }: { children: any }) => <div>{children}</div>;
   return { __esModule: true, default: Router, route: vi.fn() };
 });
 
 let apiMock: { getAuthStatus: ReturnType<typeof vi.fn> };
 
 beforeEach(async () => {
-  apiMock = (await import("./api")) as typeof apiMock;
+  apiMock = (await import("./api")) as unknown as typeof apiMock;
   vi.clearAllMocks();
 });
 
