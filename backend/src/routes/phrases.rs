@@ -1,13 +1,27 @@
 use std::sync::Arc;
 
 use axum::Json;
-use axum::extract::{Path, State};
+use axum::extract::{Path, Query, State};
 use uuid::Uuid;
 
 use crate::error::AppError;
 use crate::models::phrase::{CreatePhraseRequest, Phrase, UpdatePhraseRequest};
 use crate::services::db;
 use crate::state::AppState;
+
+#[derive(serde::Deserialize)]
+pub struct ListPhrasesQuery {
+    pub limit: Option<i64>,
+}
+
+pub async fn list_random_phrases(
+    State(state): State<Arc<AppState>>,
+    Query(query): Query<ListPhrasesQuery>,
+) -> Result<Json<Vec<Phrase>>, AppError> {
+    let limit = query.limit.unwrap_or(20);
+    let rows = db::get_random_phrases(&state.pool, limit).await?;
+    Ok(Json(rows.into_iter().map(Phrase::from).collect()))
+}
 
 pub async fn create_phrase(
     State(state): State<Arc<AppState>>,

@@ -1,12 +1,25 @@
+import { useEffect, useState } from "preact/hooks";
 import { route } from "preact-router";
 import SearchBox from "../components/SearchBox";
-import type { SearchMode } from "../types";
+import PhraseCard from "../components/PhraseCard";
+import { listPhrases } from "../api";
+import type { Phrase, SearchMode } from "../types";
 
 interface Props {
   path?: string;
 }
 
 export default function Home(_props: Props) {
+  const [phrases, setPhrases] = useState<Phrase[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    listPhrases(20)
+      .then(setPhrases)
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, []);
+
   const handleSearch = (query: string, mode: SearchMode) => {
     route(`/search?q=${encodeURIComponent(query)}&mode=${mode}`);
   };
@@ -23,6 +36,15 @@ export default function Home(_props: Props) {
       >
         + New Phrase
       </a>
+      {loading ? (
+        <p class="text-gray-400 text-sm">Loading...</p>
+      ) : phrases.length > 0 ? (
+        <div class="w-full max-w-2xl flex flex-col gap-3">
+          {phrases.map((p) => (
+            <PhraseCard key={p.id} phrase={p} />
+          ))}
+        </div>
+      ) : null}
     </div>
   );
 }
