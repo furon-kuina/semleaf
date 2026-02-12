@@ -1,11 +1,11 @@
 export default function Login() {
   return (
-    <div class="flex flex-col items-center justify-center min-h-[80vh] gap-6">
-      <h1 class="text-3xl font-bold text-gray-900">Semleaf</h1>
-      <p class="text-gray-600">Sign in to continue</p>
+    <div class="flex flex-col items-center justify-center min-h-[60vh] gap-5">
+      <h1 class="text-2xl font-semibold text-gray-900">Semleaf</h1>
+      <p class="text-sm text-gray-500">Sign in to continue</p>
       <a
         href="/api/auth/google"
-        class="px-6 py-3 bg-white border border-gray-300 rounded-lg shadow-sm hover:shadow-md transition-shadow flex items-center gap-3 no-underline text-gray-700"
+        class="px-5 py-2.5 bg-white border border-gray-300 rounded hover:bg-gray-50 transition-colors flex items-center gap-3 no-underline text-sm text-gray-700"
       >
         <svg class="w-5 h-5" viewBox="0 0 24 24">
           <path

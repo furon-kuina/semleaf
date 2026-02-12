@@ -27,17 +27,20 @@ export default function Home(_props: Props) {
   };
 
   return (
-    <div class="flex flex-col items-center justify-center min-h-[60vh] gap-8">
-      <h1 class="text-4xl font-bold text-gray-900">Semleaf</h1>
-      <div class="w-full max-w-lg">
+    <div>
+      <div class="flex items-center justify-end mb-4">
+        <button
+          onClick={() => setShowModal(true)}
+          class="px-3 py-1.5 text-sm border border-gray-300 rounded text-gray-700 hover:bg-gray-50 transition-colors"
+        >
+          + New Phrase
+        </button>
+      </div>
+
+      <div class="mb-6">
         <SearchBox onSearch={handleSearch} />
       </div>
-      <button
-        onClick={() => setShowModal(true)}
-        class="px-6 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors"
-      >
-        + New Phrase
-      </button>
+
       <PhraseFormModal
         open={showModal}
         onClose={() => setShowModal(false)}
@@ -46,15 +49,23 @@ export default function Home(_props: Props) {
           setShowModal(false);
         }}
       />
-      {loading ? (
-        <p class="text-gray-400 text-sm">Loading...</p>
-      ) : phrases.length > 0 ? (
-        <div class="w-full max-w-2xl flex flex-col gap-3">
-          {phrases.map((p) => (
-            <PhraseCard key={p.id} phrase={p} />
-          ))}
-        </div>
-      ) : null}
+
+      <div class="mt-6">
+        <h2 class="text-xs font-medium text-gray-400 uppercase tracking-wider mb-3">
+          Recent Phrases
+        </h2>
+        {loading ? (
+          <p class="text-sm text-gray-400">Loading...</p>
+        ) : phrases.length > 0 ? (
+          <div class="border border-gray-200 rounded divide-y divide-gray-200">
+            {phrases.map((p) => (
+              <PhraseCard key={p.id} phrase={p} />
+            ))}
+          </div>
+        ) : (
+          <p class="text-sm text-gray-400">No phrases yet.</p>
+        )}
+      </div>
     </div>
   );
 }

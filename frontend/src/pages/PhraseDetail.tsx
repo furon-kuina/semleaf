@@ -16,7 +16,9 @@ export default function PhraseDetail({ id }: Props) {
     if (!id) return;
     getPhrase(id)
       .then(setPhrase)
-      .catch((e) => setError(e instanceof Error ? e.message : "Failed to load"));
+      .catch((e) =>
+        setError(e instanceof Error ? e.message : "Failed to load"),
+      );
   }, [id]);
 
   const handleDelete = async () => {
@@ -29,25 +31,27 @@ export default function PhraseDetail({ id }: Props) {
     }
   };
 
-  if (error) return <p class="text-red-500">{error}</p>;
+  if (error) return <p class="text-sm text-red-600">{error}</p>;
   if (!phrase) return <p class="text-gray-500">Loading...</p>;
 
   return (
     <div class="max-w-2xl">
-      <div class="bg-white rounded-lg border border-gray-200 p-6">
-        <h2 class="text-xl font-bold text-gray-900 mb-4">{phrase.phrase}</h2>
+      <h1 class="text-xl font-semibold text-gray-900 mb-4">
+        {phrase.phrase}
+      </h1>
 
+      <div class="border border-gray-200 rounded p-5">
         <div class="space-y-4">
           <div>
-            <label class="text-sm font-medium text-gray-500">
+            <label class="text-xs font-medium text-gray-500 uppercase tracking-wider">
               {phrase.meanings.length === 1 ? "Meaning" : "Meanings"}
             </label>
             {phrase.meanings.length === 1 ? (
-              <p class="text-gray-900 mt-1">{phrase.meanings[0]}</p>
+              <p class="text-sm text-gray-900 mt-1">{phrase.meanings[0]}</p>
             ) : (
               <ul class="list-disc list-inside mt-1 space-y-1">
                 {phrase.meanings.map((meaning, i) => (
-                  <li key={i} class="text-gray-900">
+                  <li key={i} class="text-sm text-gray-900">
                     {meaning}
                   </li>
                 ))}
@@ -57,19 +61,23 @@ export default function PhraseDetail({ id }: Props) {
 
           {phrase.source && (
             <div>
-              <label class="text-sm font-medium text-gray-500">Source</label>
-              <p class="text-gray-900 mt-1">{phrase.source}</p>
+              <label class="text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Source
+              </label>
+              <p class="text-sm text-gray-900 mt-1">{phrase.source}</p>
             </div>
           )}
 
           {phrase.tags.length > 0 && (
             <div>
-              <label class="text-sm font-medium text-gray-500">Tags</label>
+              <label class="text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Tags
+              </label>
               <div class="flex gap-1 mt-1 flex-wrap">
                 {phrase.tags.map((tag) => (
                   <span
                     key={tag}
-                    class="px-2 py-0.5 bg-blue-100 text-blue-800 text-sm rounded-full"
+                    class="px-2 py-0.5 bg-gray-100 text-gray-700 text-xs rounded"
                   >
                     {tag}
                   </span>
@@ -80,33 +88,37 @@ export default function PhraseDetail({ id }: Props) {
 
           {phrase.memo && (
             <div>
-              <label class="text-sm font-medium text-gray-500">Memo</label>
-              <p class="text-gray-900 mt-1 whitespace-pre-wrap">{phrase.memo}</p>
+              <label class="text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Memo
+              </label>
+              <p class="text-sm text-gray-900 mt-1 whitespace-pre-wrap">
+                {phrase.memo}
+              </p>
             </div>
           )}
 
           <div class="text-xs text-gray-400">
-            Created: {new Date(phrase.created_at).toLocaleString()} |
-            Updated: {new Date(phrase.updated_at).toLocaleString()}
+            Created: {new Date(phrase.created_at).toLocaleString()} | Updated:{" "}
+            {new Date(phrase.updated_at).toLocaleString()}
           </div>
         </div>
 
-        <div class="flex gap-3 mt-6 pt-4 border-t border-gray-200">
+        <div class="flex gap-2 mt-5 pt-4 border-t border-gray-200">
           <a
             href={`/phrases/${phrase.id}/edit`}
-            class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors no-underline text-sm"
+            class="px-3 py-1.5 bg-blue-600 text-white text-sm rounded hover:bg-blue-700 transition-colors no-underline"
           >
             Edit
           </a>
           <button
             onClick={handleDelete}
-            class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm"
+            class="px-3 py-1.5 text-sm border border-red-300 text-red-600 rounded hover:bg-red-50 transition-colors"
           >
             Delete
           </button>
           <a
             href="/"
-            class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors no-underline text-sm"
+            class="px-3 py-1.5 text-sm border border-gray-300 text-gray-700 rounded hover:bg-gray-50 transition-colors no-underline"
           >
             Back
           </a>
