@@ -6,6 +6,12 @@ import Layout from "./Layout";
 // Mock the api module
 vi.mock("../api", () => ({
   logout: vi.fn().mockResolvedValue({ ok: true }),
+  createPhrase: vi.fn(),
+}));
+
+// Mock preact-router
+vi.mock("preact-router", () => ({
+  route: vi.fn(),
 }));
 
 describe("Layout", () => {
@@ -30,7 +36,8 @@ describe("Layout", () => {
 
     expect(screen.getByText("user@test.com")).toBeInTheDocument();
     expect(screen.getByText("Logout")).toBeInTheDocument();
-    expect(screen.getByText("+ New")).toBeInTheDocument();
+    const newButton = screen.getByText("+ New");
+    expect(newButton.tagName).toBe("BUTTON");
   });
 
   it("hides email and logout when no email", () => {

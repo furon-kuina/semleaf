@@ -1,6 +1,6 @@
 import { useEffect, useState } from "preact/hooks";
 import { route } from "preact-router";
-import { createPhrase, getPhrase, updatePhrase } from "../api";
+import { getPhrase, updatePhrase } from "../api";
 import TagInput from "../components/TagInput";
 
 interface Props {
@@ -9,7 +9,6 @@ interface Props {
 }
 
 export default function PhraseForm({ id }: Props) {
-  const isEdit = !!id;
   const [phrase, setPhrase] = useState("");
   const [meanings, setMeanings] = useState<string[]>([""]);
   const [source, setSource] = useState("");
@@ -43,6 +42,7 @@ export default function PhraseForm({ id }: Props) {
 
   const handleSubmit = async (e: Event) => {
     e.preventDefault();
+    if (!id) return;
     const trimmedMeanings = meanings.map((m) => m.trim()).filter((m) => m);
     if (!phrase.trim() || trimmedMeanings.length === 0) return;
 
@@ -50,25 +50,14 @@ export default function PhraseForm({ id }: Props) {
     setError("");
 
     try {
-      if (isEdit) {
-        await updatePhrase(id, {
-          phrase: phrase.trim(),
-          meanings: trimmedMeanings,
-          source: source.trim() || undefined,
-          tags,
-          memo: memo.trim() || undefined,
-        });
-        route(`/phrases/${id}`);
-      } else {
-        const created = await createPhrase({
-          phrase: phrase.trim(),
-          meanings: trimmedMeanings,
-          source: source.trim() || undefined,
-          tags,
-          memo: memo.trim() || undefined,
-        });
-        route(`/phrases/${created.id}`);
-      }
+      await updatePhrase(id, {
+        phrase: phrase.trim(),
+        meanings: trimmedMeanings,
+        source: source.trim() || undefined,
+        tags,
+        memo: memo.trim() || undefined,
+      });
+      route(`/phrases/${id}`);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Failed to save");
     } finally {
@@ -78,9 +67,7 @@ export default function PhraseForm({ id }: Props) {
 
   return (
     <div class="max-w-2xl">
-      <h2 class="text-xl font-bold text-gray-900 mb-4">
-        {isEdit ? "Edit Phrase" : "New Phrase"}
-      </h2>
+      <h2 class="text-xl font-bold text-gray-900 mb-4">Edit Phrase</h2>
 
       {error && <p class="text-red-500 mb-4">{error}</p>}
 
@@ -173,10 +160,10 @@ export default function PhraseForm({ id }: Props) {
             disabled={loading}
             class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 text-sm"
           >
-            {loading ? "Saving..." : isEdit ? "Update" : "Create"}
+            {loading ? "Saving..." : "Update"}
           </button>
           <a
-            href={isEdit ? `/phrases/${id}` : "/"}
+            href={`/phrases/${id}`}
             class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors no-underline text-sm"
           >
             Cancel

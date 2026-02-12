@@ -7,16 +7,22 @@ vi.mock("preact-router", () => ({
   route: vi.fn(),
 }));
 
+// Mock api
+vi.mock("../api", () => ({
+  createPhrase: vi.fn(),
+  listPhrases: vi.fn().mockResolvedValue([]),
+}));
+
 describe("Home", () => {
   it("renders SearchBox", () => {
     render(<Home />);
     expect(screen.getByPlaceholderText("Search by meaning...")).toBeInTheDocument();
   });
 
-  it("renders New Phrase link", () => {
+  it("renders New Phrase button", () => {
     render(<Home />);
-    const link = screen.getByText("+ New Phrase");
-    expect(link.closest("a")).toHaveAttribute("href", "/new");
+    const button = screen.getByText("+ New Phrase");
+    expect(button.tagName).toBe("BUTTON");
   });
 
   it("search routes to /search with query and mode", async () => {
