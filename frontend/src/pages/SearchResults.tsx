@@ -47,22 +47,26 @@ export default function SearchResults({ q, mode }: Props) {
 
   return (
     <div>
+      <h1 class="text-xl font-semibold text-gray-900 mb-4">Search Results</h1>
+
       <div class="mb-6">
         <SearchBox onSearch={handleSearch} initialMode={searchMode} />
       </div>
 
-      {loading && <p class="text-gray-500">Searching...</p>}
-      {error && <p class="text-red-500">{error}</p>}
+      {loading && <p class="text-sm text-gray-500">Searching...</p>}
+      {error && <p class="text-sm text-red-600">{error}</p>}
 
       {!loading && !error && results.length === 0 && q && (
-        <p class="text-gray-500">No results found.</p>
+        <p class="text-sm text-gray-500">No results found.</p>
       )}
 
-      <div class="flex flex-col gap-3">
-        {results.map((phrase) => (
-          <PhraseCard key={phrase.id} phrase={phrase} />
-        ))}
-      </div>
+      {results.length > 0 && (
+        <div class="border border-gray-200 rounded divide-y divide-gray-200">
+          {results.map((phrase) => (
+            <PhraseCard key={phrase.id} phrase={phrase} />
+          ))}
+        </div>
+      )}
     </div>
   );
 }

@@ -11,6 +11,7 @@ import SearchResults from "./pages/SearchResults";
 function App() {
   const [email, setEmail] = useState<string | undefined>();
   const [checked, setChecked] = useState(false);
+  const [currentUrl, setCurrentUrl] = useState(window.location.pathname);
 
   useEffect(() => {
     getAuthStatus()
@@ -40,8 +41,10 @@ function App() {
   }
 
   return (
-    <Layout email={email}>
-      <Router>
+    <Layout email={email} currentUrl={currentUrl}>
+      <Router
+        onChange={(e: { url: string }) => setCurrentUrl(e.url)}
+      >
         <Home path="/" />
         <SearchResults path="/search" />
         <PhraseDetail path="/phrases/:id" />

@@ -67,9 +67,9 @@ export default function PhraseForm({ id }: Props) {
 
   return (
     <div class="max-w-2xl">
-      <h2 class="text-xl font-bold text-gray-900 mb-4">Edit Phrase</h2>
+      <h2 class="text-xl font-semibold text-gray-900 mb-4">Edit Phrase</h2>
 
-      {error && <p class="text-red-500 mb-4">{error}</p>}
+      {error && <p class="text-sm text-red-600 mb-4">{error}</p>}
 
       <form onSubmit={handleSubmit} class="space-y-4">
         <div>
@@ -80,7 +80,7 @@ export default function PhraseForm({ id }: Props) {
             type="text"
             value={phrase}
             onInput={(e) => setPhrase((e.target as HTMLInputElement).value)}
-            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            class="w-full px-3 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
             required
           />
         </div>
@@ -96,17 +96,20 @@ export default function PhraseForm({ id }: Props) {
                   type="text"
                   value={meaning}
                   onInput={(e) =>
-                    updateMeaning(index, (e.target as HTMLInputElement).value)
+                    updateMeaning(
+                      index,
+                      (e.target as HTMLInputElement).value,
+                    )
                   }
                   placeholder={`Meaning ${index + 1}`}
-                  class="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  class="flex-1 px-3 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
                   required
                 />
                 {meanings.length > 1 && (
                   <button
                     type="button"
                     onClick={() => removeMeaning(index)}
-                    class="px-3 py-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors text-sm"
+                    class="px-3 py-1.5 text-red-600 hover:bg-red-50 rounded transition-colors text-sm"
                   >
                     Remove
                   </button>
@@ -117,7 +120,7 @@ export default function PhraseForm({ id }: Props) {
           <button
             type="button"
             onClick={addMeaning}
-            class="mt-2 px-3 py-1 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors text-sm"
+            class="mt-2 px-3 py-1 text-blue-600 hover:bg-blue-50 rounded transition-colors text-sm"
           >
             + Add meaning
           </button>
@@ -131,7 +134,7 @@ export default function PhraseForm({ id }: Props) {
             type="text"
             value={source}
             onInput={(e) => setSource((e.target as HTMLInputElement).value)}
-            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            class="w-full px-3 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
           />
         </div>
 
@@ -150,21 +153,21 @@ export default function PhraseForm({ id }: Props) {
             value={memo}
             onInput={(e) => setMemo((e.target as HTMLTextAreaElement).value)}
             rows={2}
-            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            class="w-full px-3 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
           />
         </div>
 
-        <div class="flex gap-3 pt-2">
+        <div class="flex gap-2 pt-2">
           <button
             type="submit"
             disabled={loading}
-            class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 text-sm"
+            class="px-4 py-1.5 bg-blue-600 text-white text-sm rounded hover:bg-blue-700 transition-colors disabled:opacity-50"
           >
             {loading ? "Saving..." : "Update"}
           </button>
           <a
             href={`/phrases/${id}`}
-            class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors no-underline text-sm"
+            class="px-4 py-1.5 text-sm border border-gray-300 text-gray-700 rounded hover:bg-gray-50 transition-colors no-underline"
           >
             Cancel
           </a>
