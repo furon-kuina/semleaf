@@ -1,5 +1,8 @@
 import type { ComponentChildren } from "preact";
+import { useState } from "preact/hooks";
+import { route } from "preact-router";
 import { logout } from "../api";
+import PhraseFormModal from "./PhraseFormModal";
 
 interface Props {
   children: ComponentChildren;
@@ -7,6 +10,8 @@ interface Props {
 }
 
 export default function Layout({ children, email }: Props) {
+  const [showModal, setShowModal] = useState(false);
+
   const handleLogout = async () => {
     await logout();
     window.location.href = "/login";
@@ -21,12 +26,12 @@ export default function Layout({ children, email }: Props) {
           </a>
           {email && (
             <div class="flex items-center gap-4">
-              <a
-                href="/new"
-                class="text-sm text-blue-600 hover:text-blue-800 no-underline"
+              <button
+                onClick={() => setShowModal(true)}
+                class="text-sm text-blue-600 hover:text-blue-800"
               >
                 + New
-              </a>
+              </button>
               <span class="text-sm text-gray-500">{email}</span>
               <button
                 onClick={handleLogout}
@@ -39,6 +44,14 @@ export default function Layout({ children, email }: Props) {
         </div>
       </header>
       <main class="max-w-4xl mx-auto px-4 py-6">{children}</main>
+      <PhraseFormModal
+        open={showModal}
+        onClose={() => setShowModal(false)}
+        onCreated={(created) => {
+          setShowModal(false);
+          route(`/phrases/${created.id}`);
+        }}
+      />
     </div>
   );
 }

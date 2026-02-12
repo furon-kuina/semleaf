@@ -2,6 +2,7 @@ import { useEffect, useState } from "preact/hooks";
 import { route } from "preact-router";
 import SearchBox from "../components/SearchBox";
 import PhraseCard from "../components/PhraseCard";
+import PhraseFormModal from "../components/PhraseFormModal";
 import { listPhrases } from "../api";
 import type { Phrase, SearchMode } from "../types";
 
@@ -12,6 +13,7 @@ interface Props {
 export default function Home(_props: Props) {
   const [phrases, setPhrases] = useState<Phrase[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
     listPhrases(20)
@@ -30,12 +32,20 @@ export default function Home(_props: Props) {
       <div class="w-full max-w-lg">
         <SearchBox onSearch={handleSearch} />
       </div>
-      <a
-        href="/new"
-        class="px-6 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors no-underline"
+      <button
+        onClick={() => setShowModal(true)}
+        class="px-6 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors"
       >
         + New Phrase
-      </a>
+      </button>
+      <PhraseFormModal
+        open={showModal}
+        onClose={() => setShowModal(false)}
+        onCreated={(created) => {
+          setPhrases([created, ...phrases]);
+          setShowModal(false);
+        }}
+      />
       {loading ? (
         <p class="text-gray-400 text-sm">Loading...</p>
       ) : phrases.length > 0 ? (

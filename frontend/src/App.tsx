@@ -44,7 +44,6 @@ function App() {
       <Router>
         <Home path="/" />
         <SearchResults path="/search" />
-        <PhraseForm path="/new" />
         <PhraseDetail path="/phrases/:id" />
         <PhraseForm path="/phrases/:id/edit" />
       </Router>
