@@ -1,23 +1,28 @@
 import { useEffect, useRef, useState } from "preact/hooks";
-import { createPhrase } from "../api";
-import TagInput from "./TagInput";
+import { createPhrase, updatePhrase } from "../api";
 import type { Phrase } from "../types";
 
 interface Props {
   open: boolean;
   onClose: () => void;
   onCreated: (phrase: Phrase) => void;
+  editPhrase?: Phrase | null;
 }
 
-export default function PhraseFormModal({ open, onClose, onCreated }: Props) {
+export default function PhraseFormModal({
+  open,
+  onClose,
+  onCreated,
+  editPhrase,
+}: Props) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const [phrase, setPhrase] = useState("");
   const [meanings, setMeanings] = useState<string[]>([""]);
-  const [source, setSource] = useState("");
-  const [tags, setTags] = useState<string[]>([]);
   const [memo, setMemo] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  const isEdit = !!editPhrase;
 
   useEffect(() => {
     const dialog = dialogRef.current;
@@ -28,6 +33,16 @@ export default function PhraseFormModal({ open, onClose, onCreated }: Props) {
       dialog.close();
     }
   }, [open]);
+
+  useEffect(() => {
+    if (editPhrase) {
+      setPhrase(editPhrase.phrase);
+      setMeanings(
+        editPhrase.meanings.length > 0 ? [...editPhrase.meanings] : [""],
+      );
+      setMemo(editPhrase.memo || "");
+    }
+  }, [editPhrase]);
 
   useEffect(() => {
     const dialog = dialogRef.current;
@@ -43,8 +58,6 @@ export default function PhraseFormModal({ open, onClose, onCreated }: Props) {
   const resetForm = () => {
     setPhrase("");
     setMeanings([""]);
-    setSource("");
-    setTags([]);
     setMemo("");
     setError("");
   };
@@ -81,15 +94,22 @@ export default function PhraseFormModal({ open, onClose, onCreated }: Props) {
     setError("");
 
     try {
-      const created = await createPhrase({
-        phrase: phrase.trim(),
-        meanings: trimmedMeanings,
-        source: source.trim() || undefined,
-        tags,
-        memo: memo.trim() || undefined,
-      });
+      let result: Phrase;
+      if (isEdit) {
+        result = await updatePhrase(editPhrase.id, {
+          phrase: phrase.trim(),
+          meanings: trimmedMeanings,
+          memo: memo.trim() || undefined,
+        });
+      } else {
+        result = await createPhrase({
+          phrase: phrase.trim(),
+          meanings: trimmedMeanings,
+          memo: memo.trim() || undefined,
+        });
+      }
       resetForm();
-      onCreated(created);
+      onCreated(result);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Failed to save");
     } finally {
@@ -105,7 +125,9 @@ export default function PhraseFormModal({ open, onClose, onCreated }: Props) {
     >
       <div class="p-6">
         <div class="flex items-center justify-between mb-4">
-          <h2 class="text-lg font-semibold text-gray-900">New Phrase</h2>
+          <h2 class="text-lg font-semibold text-gray-900">
+            {isEdit ? "Edit Phrase" : "New Phrase"}
+          </h2>
           <button
             type="button"
             onClick={handleClose}
@@ -122,13 +144,13 @@ export default function PhraseFormModal({ open, onClose, onCreated }: Props) {
             <label class="block text-sm font-medium text-gray-700 mb-1">
               Phrase *
             </label>
-            <input
-              type="text"
+            <textarea
               value={phrase}
               onInput={(e) =>
-                setPhrase((e.target as HTMLInputElement).value)
+                setPhrase((e.target as HTMLTextAreaElement).value)
               }
-              class="w-full px-3 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+              rows={2}
+              class="w-full px-3 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-primary-500 focus:border-primary-500"
               required
             />
           </div>
@@ -150,7 +172,7 @@ export default function PhraseFormModal({ open, onClose, onCreated }: Props) {
                       )
                     }
                     placeholder={`Meaning ${index + 1}`}
-                    class="flex-1 px-3 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                    class="flex-1 px-3 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-primary-500 focus:border-primary-500"
                     required
                   />
                   {meanings.length > 1 && (
@@ -168,31 +190,10 @@ export default function PhraseFormModal({ open, onClose, onCreated }: Props) {
             <button
               type="button"
               onClick={addMeaning}
-              class="mt-2 px-3 py-1 text-blue-600 hover:bg-blue-50 rounded transition-colors text-sm"
+              class="mt-2 px-3 py-1 text-primary-500 hover:bg-orange-50 rounded transition-colors text-sm"
             >
               + Add meaning
             </button>
-          </div>
-
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">
-              Source
-            </label>
-            <input
-              type="text"
-              value={source}
-              onInput={(e) =>
-                setSource((e.target as HTMLInputElement).value)
-              }
-              class="w-full px-3 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-            />
-          </div>
-
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">
-              Tags
-            </label>
-            <TagInput tags={tags} onChange={setTags} />
           </div>
 
           <div>
@@ -205,7 +206,7 @@ export default function PhraseFormModal({ open, onClose, onCreated }: Props) {
                 setMemo((e.target as HTMLTextAreaElement).value)
               }
               rows={2}
-              class="w-full px-3 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+              class="w-full px-3 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-primary-500 focus:border-primary-500"
             />
           </div>
 
@@ -213,9 +214,9 @@ export default function PhraseFormModal({ open, onClose, onCreated }: Props) {
             <button
               type="submit"
               disabled={loading}
-              class="px-4 py-1.5 bg-blue-600 text-white text-sm rounded hover:bg-blue-700 transition-colors disabled:opacity-50"
+              class="px-4 py-1.5 bg-primary-500 text-white text-sm rounded hover:bg-primary-600 transition-colors disabled:opacity-50"
             >
-              {loading ? "Saving..." : "Create"}
+              {loading ? "Saving..." : "Save Phrase"}
             </button>
             <button
               type="button"

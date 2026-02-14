@@ -4,14 +4,13 @@ import { getAuthStatus } from "./api";
 import Layout from "./components/Layout";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
-import PhraseDetail from "./pages/PhraseDetail";
-import PhraseForm from "./pages/PhraseForm";
 import SearchResults from "./pages/SearchResults";
 
 function App() {
   const [email, setEmail] = useState<string | undefined>();
   const [checked, setChecked] = useState(false);
   const [currentUrl, setCurrentUrl] = useState(window.location.pathname);
+  const [refreshKey, setRefreshKey] = useState(0);
 
   useEffect(() => {
     getAuthStatus()
@@ -41,14 +40,16 @@ function App() {
   }
 
   return (
-    <Layout email={email} currentUrl={currentUrl}>
+    <Layout
+      email={email}
+      currentUrl={currentUrl}
+      onPhraseCreated={() => setRefreshKey((k) => k + 1)}
+    >
       <Router
         onChange={(e: { url: string }) => setCurrentUrl(e.url)}
       >
-        <Home path="/" />
+        <Home path="/" key={refreshKey} />
         <SearchResults path="/search" />
-        <PhraseDetail path="/phrases/:id" />
-        <PhraseForm path="/phrases/:id/edit" />
       </Router>
     </Layout>
   );

@@ -5,10 +5,12 @@ import PhraseFormModal from "./PhraseFormModal";
 
 vi.mock("../api", () => ({
   createPhrase: vi.fn(),
+  updatePhrase: vi.fn(),
 }));
 
 let apiMock: {
   createPhrase: ReturnType<typeof vi.fn>;
+  updatePhrase: ReturnType<typeof vi.fn>;
 };
 
 // Mock HTMLDialogElement methods
@@ -46,6 +48,28 @@ describe("PhraseFormModal", () => {
       <PhraseFormModal open={true} onClose={vi.fn()} onCreated={vi.fn()} />,
     );
     expect(screen.getByText("New Phrase")).toBeInTheDocument();
+  });
+
+  it("shows Edit Phrase heading when editPhrase is provided", () => {
+    const phrase = {
+      id: "1",
+      phrase: "test",
+      meanings: ["meaning"],
+      source: null,
+      tags: [],
+      memo: null,
+      created_at: "2025-01-01T00:00:00Z",
+      updated_at: "2025-01-01T00:00:00Z",
+    };
+    render(
+      <PhraseFormModal
+        open={true}
+        onClose={vi.fn()}
+        onCreated={vi.fn()}
+        editPhrase={phrase}
+      />,
+    );
+    expect(screen.getByText("Edit Phrase")).toBeInTheDocument();
   });
 
   it("calls onClose when Cancel is clicked", async () => {
@@ -97,7 +121,7 @@ describe("PhraseFormModal", () => {
 
     await user.type(phraseInput, "test");
     await user.type(meaningInput, "a test");
-    await user.click(screen.getByText("Create"));
+    await user.click(screen.getByText("Save Phrase"));
 
     await waitFor(() => {
       expect(apiMock.createPhrase).toHaveBeenCalledWith(
@@ -117,7 +141,7 @@ describe("PhraseFormModal", () => {
       <PhraseFormModal open={true} onClose={vi.fn()} onCreated={vi.fn()} />,
     );
 
-    await user.click(screen.getByText("Create"));
+    await user.click(screen.getByText("Save Phrase"));
 
     expect(apiMock.createPhrase).not.toHaveBeenCalled();
   });
@@ -135,7 +159,7 @@ describe("PhraseFormModal", () => {
 
     await user.type(phraseInput, "test");
     await user.type(meaningInput, "a test");
-    await user.click(screen.getByText("Create"));
+    await user.click(screen.getByText("Save Phrase"));
 
     await waitFor(() => {
       expect(screen.getByText("Server error")).toBeInTheDocument();
@@ -155,7 +179,7 @@ describe("PhraseFormModal", () => {
 
     await user.type(phraseInput, "test");
     await user.type(meaningInput, "a test");
-    await user.click(screen.getByText("Create"));
+    await user.click(screen.getByText("Save Phrase"));
 
     await waitFor(() => {
       expect(screen.getByText("Saving...")).toBeInTheDocument();

@@ -5,7 +5,7 @@ import Login from "./Login";
 describe("Login", () => {
   it("renders heading", () => {
     render(<Login />);
-    expect(screen.getByText("Semleaf")).toBeInTheDocument();
+    expect(screen.getByText("SemLeaf")).toBeInTheDocument();
   });
 
   it("renders sign-in text", () => {
@@ -15,7 +15,12 @@ describe("Login", () => {
 
   it("renders Google OAuth link", () => {
     render(<Login />);
-    const link = screen.getByText("Sign in with Google");
+    const link = screen.getByText("Continue with Google");
     expect(link.closest("a")).toHaveAttribute("href", "/api/auth/google");
+  });
+
+  it("renders access restriction note", () => {
+    render(<Login />);
+    expect(screen.getByText("Access is restricted to authorized users.")).toBeInTheDocument();
   });
 });
