@@ -38,7 +38,7 @@ test.describe("Navigation", () => {
     await expect(page.getByText("test phrase")).toBeVisible();
 
     // Logo links to home
-    await page.getByText("Semleaf").first().click();
+    await page.getByText("eemee").first().click();
     await expect(page).toHaveURL("/");
 
     // "+ New" links to form

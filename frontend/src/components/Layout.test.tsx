@@ -23,8 +23,8 @@ describe("Layout", () => {
     );
 
     expect(screen.getByText("Child content")).toBeInTheDocument();
-    expect(screen.getByText("Semleaf")).toBeInTheDocument();
-    expect(screen.getByText("Semleaf").closest("a")).toHaveAttribute("href", "/");
+    expect(screen.getByText("eemee")).toBeInTheDocument();
+    expect(screen.getByText("eemee").closest("a")).toHaveAttribute("href", "/");
   });
 
   it("shows search box and new phrase button when authenticated", () => {

@@ -50,7 +50,7 @@ async fn export_json_content_disposition() {
         .unwrap()
         .to_str()
         .unwrap();
-    assert!(content_disp.contains("semleaf-export.json"));
+    assert!(content_disp.contains("eemee-export.json"));
 
     pool.close().await;
     common::teardown_test_db(&db_name).await;

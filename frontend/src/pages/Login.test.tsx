@@ -5,7 +5,7 @@ import Login from "./Login";
 describe("Login", () => {
   it("renders heading", () => {
     render(<Login />);
-    expect(screen.getByText("SemLeaf")).toBeInTheDocument();
+    expect(screen.getByText("eemee")).toBeInTheDocument();
   });
 
   it("renders sign-in text", () => {

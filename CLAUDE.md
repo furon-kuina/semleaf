@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Semleaf is a semantic search app for storing and searching phrases with AI-powered embeddings. Rust/Axum backend + Preact/TypeScript frontend, PostgreSQL with pgvector for vector similarity search.
+eemee is a semantic search app for storing and searching phrases with AI-powered embeddings. Rust/Axum backend + Preact/TypeScript frontend, PostgreSQL with pgvector for vector similarity search.
 
 ## Commands
 
