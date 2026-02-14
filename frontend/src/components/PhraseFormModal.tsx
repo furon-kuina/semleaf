@@ -121,7 +121,7 @@ export default function PhraseFormModal({
     <dialog
       ref={dialogRef}
       onClick={handleBackdropClick}
-      class="p-0 rounded shadow-lg backdrop:bg-black/50 max-w-2xl w-full"
+      class="p-0 rounded shadow-lg backdrop:bg-black/50 max-w-2xl w-full mx-auto my-auto"
     >
       <div class="p-6">
         <div class="flex items-center justify-between mb-4">
