@@ -7,6 +7,9 @@ import { makePhrase } from "../test/helpers";
 vi.mock("../api", () => ({
   semanticSearch: vi.fn(),
   textSearch: vi.fn(),
+  createPhrase: vi.fn(),
+  updatePhrase: vi.fn(),
+  deletePhrase: vi.fn(),
 }));
 
 // Mock preact-router
@@ -49,7 +52,7 @@ describe("SearchResults", () => {
     });
   });
 
-  it("renders PhraseCards with results", async () => {
+  it("renders phrases in table with results", async () => {
     const phrases = [
       makePhrase({ phrase: "alpha" }),
       makePhrase({ phrase: "beta" }),

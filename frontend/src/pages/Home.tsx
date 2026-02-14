@@ -1,10 +1,8 @@
 import { useEffect, useState } from "preact/hooks";
-import { route } from "preact-router";
-import SearchBox from "../components/SearchBox";
-import PhraseCard from "../components/PhraseCard";
+import PhraseTable from "../components/PhraseTable";
 import PhraseFormModal from "../components/PhraseFormModal";
 import { listPhrases } from "../api";
-import type { Phrase, SearchMode } from "../types";
+import type { Phrase } from "../types";
 
 interface Props {
   path?: string;
@@ -13,7 +11,7 @@ interface Props {
 export default function Home(_props: Props) {
   const [phrases, setPhrases] = useState<Phrase[]>([]);
   const [loading, setLoading] = useState(true);
-  const [showModal, setShowModal] = useState(false);
+  const [editPhrase, setEditPhrase] = useState<Phrase | null>(null);
 
   useEffect(() => {
     listPhrases(20)
@@ -22,50 +20,44 @@ export default function Home(_props: Props) {
       .finally(() => setLoading(false));
   }, []);
 
-  const handleSearch = (query: string, mode: SearchMode) => {
-    route(`/search?q=${encodeURIComponent(query)}&mode=${mode}`);
+  const handleDeleted = (id: string) => {
+    setPhrases(phrases.filter((p) => p.id !== id));
+  };
+
+  const handleUpdated = (updated: Phrase) => {
+    setPhrases(phrases.map((p) => (p.id === updated.id ? updated : p)));
+    setEditPhrase(null);
   };
 
   return (
-    <div>
-      <div class="flex items-center justify-end mb-4">
-        <button
-          onClick={() => setShowModal(true)}
-          class="px-3 py-1.5 text-sm border border-gray-300 rounded text-gray-700 hover:bg-gray-50 transition-colors"
-        >
-          + New Phrase
-        </button>
-      </div>
-
-      <div class="mb-6">
-        <SearchBox onSearch={handleSearch} />
-      </div>
-
-      <PhraseFormModal
-        open={showModal}
-        onClose={() => setShowModal(false)}
-        onCreated={(created) => {
-          setPhrases([created, ...phrases]);
-          setShowModal(false);
-        }}
-      />
-
-      <div class="mt-6">
-        <h2 class="text-xs font-medium text-gray-400 uppercase tracking-wider mb-3">
-          Recent Phrases
-        </h2>
-        {loading ? (
-          <p class="text-sm text-gray-400">Loading...</p>
-        ) : phrases.length > 0 ? (
-          <div class="border border-gray-200 rounded divide-y divide-gray-200">
-            {phrases.map((p) => (
-              <PhraseCard key={p.id} phrase={p} />
-            ))}
-          </div>
-        ) : (
-          <p class="text-sm text-gray-400">No phrases yet.</p>
+    <div class="flex flex-col gap-5">
+      <div class="flex items-center justify-between">
+        <h1 class="text-base font-semibold text-gray-900 font-mono">
+          Phrases
+        </h1>
+        {!loading && (
+          <span class="text-[13px] text-gray-400">
+            {phrases.length} phrases
+          </span>
         )}
       </div>
+
+      {loading ? (
+        <p class="text-sm text-gray-400">Loading...</p>
+      ) : (
+        <PhraseTable
+          phrases={phrases}
+          onPhraseDeleted={handleDeleted}
+          onEditPhrase={setEditPhrase}
+        />
+      )}
+
+      <PhraseFormModal
+        open={!!editPhrase}
+        onClose={() => setEditPhrase(null)}
+        onCreated={handleUpdated}
+        editPhrase={editPhrase}
+      />
     </div>
   );
 }

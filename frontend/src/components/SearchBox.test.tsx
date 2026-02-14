@@ -1,49 +1,57 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/preact";
 import userEvent from "@testing-library/user-event";
 import SearchBox from "./SearchBox";
 
+vi.mock("preact-router", () => ({
+  route: vi.fn(),
+}));
+
+beforeEach(() => {
+  vi.clearAllMocks();
+});
+
 describe("SearchBox", () => {
-  it("renders with semantic placeholder by default", () => {
-    render(<SearchBox onSearch={() => {}} />);
+  it("renders with placeholder text", () => {
+    render(<SearchBox />);
     expect(screen.getByPlaceholderText("Search by meaning...")).toBeInTheDocument();
   });
 
-  it("renders with text placeholder when mode is text", () => {
-    render(<SearchBox onSearch={() => {}} initialMode="text" />);
-    expect(screen.getByPlaceholderText("Search by text...")).toBeInTheDocument();
+  it("renders with current query when provided", () => {
+    render(<SearchBox currentQuery="test query" />);
+    expect(screen.getByDisplayValue("test query")).toBeInTheDocument();
   });
 
-  it("calls onSearch with query and mode on submit", async () => {
-    const onSearch = vi.fn();
+  it("navigates to search on submit", async () => {
+    const { route } = await import("preact-router");
     const user = userEvent.setup();
-    render(<SearchBox onSearch={onSearch} />);
+    render(<SearchBox />);
 
     const input = screen.getByPlaceholderText("Search by meaning...");
-    await user.type(input, "test query");
-    await user.click(screen.getByText("Search"));
+    await user.type(input, "test query{enter}");
 
-    expect(onSearch).toHaveBeenCalledWith("test query", "semantic");
+    expect(route).toHaveBeenCalledWith("/search?q=test%20query");
   });
 
-  it("trims whitespace before searching", async () => {
-    const onSearch = vi.fn();
+  it("does not navigate with empty query", async () => {
+    const { route } = await import("preact-router");
     const user = userEvent.setup();
-    render(<SearchBox onSearch={onSearch} />);
+    render(<SearchBox />);
 
     const input = screen.getByPlaceholderText("Search by meaning...");
-    await user.type(input, "  spaced  ");
-    await user.click(screen.getByText("Search"));
+    await user.type(input, "{enter}");
 
-    expect(onSearch).toHaveBeenCalledWith("spaced", "semantic");
+    expect(route).not.toHaveBeenCalled();
   });
 
-  it("does not call onSearch with empty query", async () => {
-    const onSearch = vi.fn();
+  it("trims whitespace before navigating", async () => {
+    const { route } = await import("preact-router");
     const user = userEvent.setup();
-    render(<SearchBox onSearch={onSearch} />);
+    render(<SearchBox />);
 
-    await user.click(screen.getByText("Search"));
-    expect(onSearch).not.toHaveBeenCalled();
+    const input = screen.getByPlaceholderText("Search by meaning...");
+    await user.type(input, "  spaced  {enter}");
+
+    expect(route).toHaveBeenCalledWith("/search?q=spaced");
   });
 });

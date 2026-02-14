@@ -1,41 +1,47 @@
-import { describe, it, expect, vi } from "vitest";
-import { render, screen } from "@testing-library/preact";
+import { describe, it, expect, vi, beforeEach } from "vitest";
+import { render, screen, waitFor } from "@testing-library/preact";
 import Home from "./Home";
-
-// Mock preact-router
-vi.mock("preact-router", () => ({
-  route: vi.fn(),
-}));
+import { makePhrase } from "../test/helpers";
 
 // Mock api
 vi.mock("../api", () => ({
   createPhrase: vi.fn(),
+  updatePhrase: vi.fn(),
+  deletePhrase: vi.fn(),
   listPhrases: vi.fn().mockResolvedValue([]),
 }));
 
+let apiMock: { listPhrases: ReturnType<typeof vi.fn> };
+
+beforeEach(async () => {
+  apiMock = (await import("../api")) as unknown as typeof apiMock;
+  vi.clearAllMocks();
+  apiMock.listPhrases.mockResolvedValue([]);
+});
+
 describe("Home", () => {
-  it("renders SearchBox", () => {
+  it("renders Phrases heading", () => {
     render(<Home />);
-    expect(screen.getByPlaceholderText("Search by meaning...")).toBeInTheDocument();
+    expect(screen.getByText("Phrases")).toBeInTheDocument();
   });
 
-  it("renders New Phrase button", () => {
+  it("shows phrases in a table when loaded", async () => {
+    apiMock.listPhrases.mockResolvedValue([
+      makePhrase({ phrase: "hello" }),
+    ]);
+
     render(<Home />);
-    const button = screen.getByText("+ New Phrase");
-    expect(button.tagName).toBe("BUTTON");
+
+    await waitFor(() => {
+      expect(screen.getByText("hello")).toBeInTheDocument();
+    });
   });
 
-  it("search routes to /search with query and mode", async () => {
-    const { route } = await import("preact-router");
-    const { default: userEvent } = await import("@testing-library/user-event");
-    const user = userEvent.setup();
-
+  it("shows empty state when no phrases", async () => {
     render(<Home />);
 
-    const input = screen.getByPlaceholderText("Search by meaning...");
-    await user.type(input, "test query");
-    await user.click(screen.getByText("Search"));
-
-    expect(route).toHaveBeenCalledWith("/search?q=test%20query&mode=semantic");
+    await waitFor(() => {
+      expect(screen.getByText("No phrases yet.")).toBeInTheDocument();
+    });
   });
 });

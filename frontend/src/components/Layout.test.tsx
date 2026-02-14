@@ -5,8 +5,8 @@ import Layout from "./Layout";
 
 // Mock the api module
 vi.mock("../api", () => ({
-  logout: vi.fn().mockResolvedValue({ ok: true }),
   createPhrase: vi.fn(),
+  updatePhrase: vi.fn(),
 }));
 
 // Mock preact-router
@@ -27,32 +27,33 @@ describe("Layout", () => {
     expect(screen.getByText("Semleaf").closest("a")).toHaveAttribute("href", "/");
   });
 
-  it("shows email and logout when email is provided", () => {
+  it("shows search box and new phrase button when authenticated", () => {
     render(
       <Layout email="user@test.com">
         <p>Content</p>
       </Layout>,
     );
 
-    expect(screen.getByText("user@test.com")).toBeInTheDocument();
-    expect(screen.getByText("Logout")).toBeInTheDocument();
-    const newButton = screen.getByText("+ New");
-    expect(newButton.tagName).toBe("BUTTON");
+    expect(screen.getByPlaceholderText("Search by meaning...")).toBeInTheDocument();
+    const buttons = screen.getAllByText("New Phrase");
+    const headerButton = buttons.find((el) => el.tagName === "BUTTON");
+    expect(headerButton).toBeDefined();
   });
 
-  it("hides email and logout when no email", () => {
+  it("hides search and new phrase when no email", () => {
     render(
       <Layout>
         <p>Content</p>
       </Layout>,
     );
 
-    expect(screen.queryByText("Logout")).not.toBeInTheDocument();
-    expect(screen.queryByText("+ New")).not.toBeInTheDocument();
+    expect(screen.queryByPlaceholderText("Search by meaning...")).not.toBeInTheDocument();
+    const matches = screen.queryAllByText("New Phrase");
+    const headerButton = matches.find((el) => el.tagName === "BUTTON");
+    expect(headerButton).toBeUndefined();
   });
 
-  it("logout button calls api and redirects", async () => {
-    const { logout } = await import("../api");
+  it("opens phrase form modal on New Phrase click", async () => {
     const user = userEvent.setup();
 
     render(
@@ -61,8 +62,10 @@ describe("Layout", () => {
       </Layout>,
     );
 
-    await user.click(screen.getByText("Logout"));
+    const buttons = screen.getAllByText("New Phrase");
+    const headerButton = buttons.find((el) => el.tagName === "BUTTON")!;
+    await user.click(headerButton);
 
-    expect(logout).toHaveBeenCalled();
+    expect(screen.getByText("Phrase *")).toBeInTheDocument();
   });
 });

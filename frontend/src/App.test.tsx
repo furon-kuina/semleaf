@@ -4,7 +4,10 @@ import App from "./App";
 
 vi.mock("./api", () => ({
   getAuthStatus: vi.fn(),
-  logout: vi.fn().mockResolvedValue({ ok: true }),
+  createPhrase: vi.fn(),
+  updatePhrase: vi.fn(),
+  deletePhrase: vi.fn(),
+  listPhrases: vi.fn().mockResolvedValue([]),
 }));
 
 vi.mock("preact-router", () => {
@@ -43,7 +46,8 @@ describe("App", () => {
     render(<App />);
 
     await waitFor(() => {
-      expect(screen.getByText("user@example.com")).toBeInTheDocument();
+      expect(screen.getByText("Semleaf")).toBeInTheDocument();
+      expect(screen.getByPlaceholderText("Search by meaning...")).toBeInTheDocument();
     });
   });
 });

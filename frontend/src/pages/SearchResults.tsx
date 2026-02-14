@@ -1,8 +1,7 @@
 import { useEffect, useState } from "preact/hooks";
-import { route } from "preact-router";
 import { semanticSearch, textSearch } from "../api";
-import PhraseCard from "../components/PhraseCard";
-import SearchBox from "../components/SearchBox";
+import PhraseTable from "../components/PhraseTable";
+import PhraseFormModal from "../components/PhraseFormModal";
 import type { Phrase, SearchMode } from "../types";
 
 interface Props {
@@ -15,6 +14,7 @@ export default function SearchResults({ q, mode }: Props) {
   const [results, setResults] = useState<Phrase[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [editPhrase, setEditPhrase] = useState<Phrase | null>(null);
 
   const searchMode = (mode === "text" ? "text" : "semantic") as SearchMode;
 
@@ -41,17 +41,27 @@ export default function SearchResults({ q, mode }: Props) {
     doSearch();
   }, [q, searchMode]);
 
-  const handleSearch = (query: string, newMode: SearchMode) => {
-    route(`/search?q=${encodeURIComponent(query)}&mode=${newMode}`);
+  const handleDeleted = (id: string) => {
+    setResults(results.filter((p) => p.id !== id));
+  };
+
+  const handleUpdated = (updated: Phrase) => {
+    setResults(results.map((p) => (p.id === updated.id ? updated : p)));
+    setEditPhrase(null);
   };
 
   return (
-    <div>
-      <h1 class="text-xl font-semibold text-gray-900 mb-4">Search Results</h1>
-
-      <div class="mb-6">
-        <SearchBox onSearch={handleSearch} initialMode={searchMode} />
-      </div>
+    <div class="flex flex-col gap-5">
+      {q && !loading && !error && (
+        <div class="flex items-center justify-between">
+          <h1 class="text-base font-semibold text-gray-900 font-mono">
+            Results for &ldquo;{q}&rdquo;
+          </h1>
+          <span class="text-[13px] text-gray-400">
+            {results.length} results
+          </span>
+        </div>
+      )}
 
       {loading && <p class="text-sm text-gray-500">Searching...</p>}
       {error && <p class="text-sm text-red-600">{error}</p>}
@@ -60,13 +70,20 @@ export default function SearchResults({ q, mode }: Props) {
         <p class="text-sm text-gray-500">No results found.</p>
       )}
 
-      {results.length > 0 && (
-        <div class="border border-gray-200 rounded divide-y divide-gray-200">
-          {results.map((phrase) => (
-            <PhraseCard key={phrase.id} phrase={phrase} />
-          ))}
-        </div>
+      {!loading && results.length > 0 && (
+        <PhraseTable
+          phrases={results}
+          onPhraseDeleted={handleDeleted}
+          onEditPhrase={setEditPhrase}
+        />
       )}
+
+      <PhraseFormModal
+        open={!!editPhrase}
+        onClose={() => setEditPhrase(null)}
+        onCreated={handleUpdated}
+        editPhrase={editPhrase}
+      />
     </div>
   );
 }
