@@ -46,7 +46,7 @@ describe("App", () => {
     render(<App />);
 
     await waitFor(() => {
-      expect(screen.getByText("Semleaf")).toBeInTheDocument();
+      expect(screen.getByText("eemee")).toBeInTheDocument();
       expect(screen.getByPlaceholderText("Search by meaning...")).toBeInTheDocument();
     });
   });

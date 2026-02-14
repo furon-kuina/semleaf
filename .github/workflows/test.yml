@@ -16,18 +16,18 @@ jobs:
       postgres:
         image: pgvector/pgvector:pg17
         env:
-          POSTGRES_USER: semleaf
-          POSTGRES_PASSWORD: semleaf
-          POSTGRES_DB: semleaf
+          POSTGRES_USER: eemee
+          POSTGRES_PASSWORD: eemee
+          POSTGRES_DB: eemee
         ports:
           - 5432:5432
         options: >-
-          --health-cmd "pg_isready -U semleaf"
+          --health-cmd "pg_isready -U eemee"
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
     env:
-      DATABASE_URL: postgres://semleaf:semleaf@localhost:5432/semleaf
+      DATABASE_URL: postgres://eemee:eemee@localhost:5432/eemee
     steps:
       - uses: actions/checkout@v4
 

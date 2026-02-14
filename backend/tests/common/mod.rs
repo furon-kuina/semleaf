@@ -9,15 +9,15 @@ use axum::body::Body;
 use axum::http::{self, Request, StatusCode};
 use axum::middleware;
 use axum::routing::{get, post};
+use eemee_backend::auth;
+use eemee_backend::error::AppError;
+use eemee_backend::routes;
+use eemee_backend::services::embedding::Embedder;
+use eemee_backend::state::AppState;
 use http_body_util::BodyExt;
 use oauth2::basic::BasicClient;
 use oauth2::{AuthUrl, ClientId, ClientSecret, RedirectUrl, TokenUrl};
 use pgvector::Vector;
-use semleaf_backend::auth;
-use semleaf_backend::error::AppError;
-use semleaf_backend::routes;
-use semleaf_backend::services::embedding::Embedder;
-use semleaf_backend::state::AppState;
 use sqlx::PgPool;
 use tower::ServiceExt;
 use tower_sessions::cookie::SameSite;
@@ -46,7 +46,7 @@ pub async fn setup_test_db() -> (PgPool, String) {
     });
 
     let db_name = format!(
-        "semleaf_test_{}",
+        "eemee_test_{}",
         uuid::Uuid::new_v4().to_string().replace('-', "")
     );
 
@@ -108,7 +108,7 @@ pub async fn teardown_test_db(db_name: &str) {
     admin_pool.close().await;
 }
 
-fn dummy_oauth_client() -> semleaf_backend::state::OAuthClient {
+fn dummy_oauth_client() -> eemee_backend::state::OAuthClient {
     let client_id = ClientId::new("test-client-id".to_string());
     let client_secret = ClientSecret::new("test-client-secret".to_string());
     let auth_url = AuthUrl::new("https://example.com/auth".to_string()).unwrap();

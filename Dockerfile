@@ -12,14 +12,14 @@ RUN apt-get update && apt-get install -y pkg-config libssl-dev && rm -rf /var/li
 WORKDIR /app
 COPY Cargo.toml Cargo.lock ./
 COPY backend/ backend/
-RUN cargo build --release -p semleaf-backend
+RUN cargo build --release -p eemee-backend
 
 # --- Runtime ---
 FROM debian:bookworm-slim
 RUN apt-get update && apt-get install -y ca-certificates && rm -rf /var/lib/apt/lists/*
 WORKDIR /app
-COPY --from=backend /app/target/release/semleaf-backend ./
+COPY --from=backend /app/target/release/eemee-backend ./
 COPY --from=frontend /app/frontend/dist ./dist
 ENV STATIC_DIR=/app/dist
 EXPOSE 16789
-CMD ["./semleaf-backend"]
+CMD ["./eemee-backend"]

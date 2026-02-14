@@ -4,9 +4,9 @@ services:
     ports:
       - "5432:5432"
     environment:
-      POSTGRES_USER: semleaf
-      POSTGRES_PASSWORD: semleaf
-      POSTGRES_DB: semleaf
+      POSTGRES_USER: eemee
+      POSTGRES_PASSWORD: eemee
+      POSTGRES_DB: eemee
     volumes:
       - pgdata:/var/lib/postgresql/data
 

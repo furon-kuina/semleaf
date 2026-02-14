@@ -13,10 +13,10 @@ use tower_sessions::cookie::SameSite;
 use tower_sessions::{Expiry, SessionManagerLayer};
 use tower_sessions_sqlx_store::PostgresStore;
 
-use semleaf_backend::auth;
-use semleaf_backend::routes;
-use semleaf_backend::services::embedding::{Embedder, EmbeddingService};
-use semleaf_backend::state::AppState;
+use eemee_backend::auth;
+use eemee_backend::routes;
+use eemee_backend::services::embedding::{Embedder, EmbeddingService};
+use eemee_backend::state::AppState;
 
 #[tokio::main]
 async fn main() {

@@ -28,6 +28,6 @@ test.describe("Authentication", () => {
     await page.goto("/");
 
     await expect(page.getByText("test@example.com")).toBeVisible();
-    await expect(page.getByRole("link", { name: "Semleaf" })).toBeVisible();
+    await expect(page.getByRole("link", { name: "eemee" })).toBeVisible();
   });
 });

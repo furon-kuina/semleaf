@@ -57,7 +57,7 @@ pub async fn export(
                     (header::CONTENT_TYPE, "text/csv; charset=utf-8"),
                     (
                         header::CONTENT_DISPOSITION,
-                        "attachment; filename=\"semleaf-export.csv\"",
+                        "attachment; filename=\"eemee-export.csv\"",
                     ),
                 ],
                 csv_data,
@@ -72,7 +72,7 @@ pub async fn export(
                     (header::CONTENT_TYPE, "application/json; charset=utf-8"),
                     (
                         header::CONTENT_DISPOSITION,
-                        "attachment; filename=\"semleaf-export.json\"",
+                        "attachment; filename=\"eemee-export.json\"",
                     ),
                 ],
                 json_data,
