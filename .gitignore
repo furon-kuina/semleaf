@@ -15,3 +15,5 @@ frontend/test-results
 .idea
 *.swp
 *.swo
+
+.wt
